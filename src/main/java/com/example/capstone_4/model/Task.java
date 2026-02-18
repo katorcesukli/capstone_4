@@ -1,15 +1,15 @@
 package com.example.capstone_4.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name ="tasks")
 @Data
-@Setter
-@Getter
 @AllArgsConstructor
 @NoArgsConstructor
 public class Task {
@@ -19,7 +19,7 @@ public class Task {
     private Long id;
 
     @Column(nullable = false, unique = true, name ="task_id")
-    private String taskId; //serves to connect to the account
+    private String taskId;
 
     @Column(nullable = false, name ="task_name")
     private String taskName;
@@ -31,7 +31,6 @@ public class Task {
     private String taskStatus;
 
     @Column(nullable = false, name ="task_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate taskDate;
-
-
 }

@@ -12,4 +12,6 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
 
     // Find by username
     Optional<Account> findByUsername(String username);
+
+    Account findTopByOrderByIdDesc();
 }
