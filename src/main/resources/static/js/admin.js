@@ -10,34 +10,48 @@ const saveTaskBtn = document.querySelector("#saveTaskBtn");
 const resetFormBtn = document.querySelector("#resetFormBtn");
 const formTitle = document.querySelector("#formTitle");
 
-// Fetch and display all tasks
+// ----------------- Load Tasks -----------------
 async function loadTasks() {
     try {
         const res = await fetch(apiUrl);
         if (!res.ok) throw new Error("Failed to load tasks");
         const tasks = await res.json();
+
+        // Clear existing table rows
         tasksTableBody.innerHTML = "";
 
-        tasks.forEach(task => {
+        // Render each task safely
+        tasks.forEach(t => {
             const row = document.createElement("tr");
+
             row.innerHTML = `
-                <td>${task.taskId ? task.taskId.accountId : ""}</td>
-                <td>${task.taskName}</td>
-                <td>${task.taskDescription}</td>
-                <td>${task.taskStatus}</td>
-                <td>${task.taskDate}</td>
+                <td>${t.taskId ? t.taskId.accountId : ""}</td>
+                <td>${t.taskName}</td>
+                <td>${t.taskDescription}</td>
+                <td>${t.taskStatus}</td>
+                <td>${t.taskDate}</td>
                 <td>
-                    <button onclick="editTask(${task.id})">Edit</button>
-                    <button onclick="deleteTask(${task.id})">Delete</button>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
                 </td>
             `;
+
+            // Attach event listeners using closure to avoid "task is not defined"
+            const editBtn = row.querySelector(".edit-btn");
+            const deleteBtn = row.querySelector(".delete-btn");
+
+            editBtn.addEventListener("click", () => editTask(t.id));
+            deleteBtn.addEventListener("click", () => deleteTask(t.id));
+
             tasksTableBody.appendChild(row);
         });
+
     } catch (error) {
         console.error(error);
         alert("Error loading tasks.");
     }
 }
+
 
 /// Save or Update task
  async function saveTask() {
@@ -71,6 +85,9 @@ async function loadTasks() {
 
              if (!res.ok) throw new Error("Failed to update task");
              alert("Task updated successfully!");
+             resetForm();
+             await loadTasks(); // ensures table reloads
+
          } else {
              // CREATE new task
              // Include accountId in request as query param
@@ -126,7 +143,9 @@ async function deleteTask(id) {
         const res = await fetch(`${apiUrl}/${id}`, { method: "DELETE" });
         if (!res.ok) throw new Error("Failed to delete task");
         alert("Task deleted successfully!");
-        loadTasks();
+        resetForm();
+        await loadTasks(); // ensures table reloads
+
     } catch (error) {
         console.error(error);
         alert(error.message);
@@ -134,16 +153,17 @@ async function deleteTask(id) {
 }
 
 // Reset form
+// Reset form
 function resetForm() {
-    taskIdInput.value = task.taskId ? task.taskId.accountId : "";
-
-    delete taskIdInput.dataset.pk; // remove backend id
+    taskIdInput.value = "";                  // clear Task ID
+    delete taskIdInput.dataset.pk;           // remove backend id
     taskNameInput.value = "";
     taskDescriptionInput.value = "";
     taskStatusInput.value = "PENDING";
     taskDateInput.value = "";
     formTitle.textContent = "Create New Task";
 }
+
 
 // Event listeners
 saveTaskBtn.addEventListener("click", saveTask);

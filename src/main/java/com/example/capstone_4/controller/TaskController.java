@@ -80,9 +80,9 @@ public class TaskController {
     }
 
     @PostMapping("/user/{accountId}")
-    public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId){
+    public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId, @RequestBody Task task){
         try{
-            return ResponseEntity.ok(taskService.createTask(accountId,));
+            return ResponseEntity.ok(taskService.createTask(accountId, task));
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
