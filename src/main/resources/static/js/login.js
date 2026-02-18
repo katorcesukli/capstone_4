@@ -50,8 +50,18 @@ document.addEventListener("DOMContentLoaded", () => {
                 return response.json();
             })
             .then(user => {
-                localStorage.setItem(sessionKey, JSON.stringify(user));
-                console.log("Login successful. Role:", user.role);
+            console.log("FULL LOGIN RESPONSE:", user);
+                const sessionUser = {
+                        username: user.username,
+                        role: user.role,
+                        accountId: user.accountId || user.account_id // handles both camelCase and snake_case
+                    };
+
+
+
+                localStorage.setItem(sessionKey, JSON.stringify(sessionUser));
+                console.log("Login successful. Role:", sessionUser.role);
+                console.log("Account ID:", sessionUser.accountId);
 
                 if (user.role && user.role.toUpperCase() === 'ADMIN') {
                     window.location.href = 'admin.html';

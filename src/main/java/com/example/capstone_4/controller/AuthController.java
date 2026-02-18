@@ -50,7 +50,8 @@ public class AuthController {
             // Return role info to frontend for redirect
             return ResponseEntity.ok(Map.of(
                     "username", account.getUsername(),
-                    "role", account.getRole() // "ADMIN" or "CUSTOMER"
+                    "role", account.getRole(), // "ADMIN" or "CUSTOMER"
+                    "accountId", account.getAccountId()
             ));
 
         } catch (RuntimeException e) {

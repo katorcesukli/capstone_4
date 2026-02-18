@@ -19,8 +19,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, name ="task_id")
-    private String taskId;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id" ,referencedColumnName = "account_id")
+    private Account taskId;
 
     @Column(nullable = false, name ="task_name")
     private String taskName;
