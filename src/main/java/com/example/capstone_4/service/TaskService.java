@@ -70,12 +70,13 @@ public class TaskService {
     }
 
     /*** USER-SPECIFIC OPERATIONS ***/
-    public Task getByTaskByUserId(String accountId){
+    public List<Task> getByTaskByUserId(String accountId){
         Account account = accountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AccountDoesNotExistException("Account not found: " + accountId));
-        return (Task) taskRepository.getTaskByTaskId(account)
-                .orElseThrow(() -> new TaskIdDoesNotExistException("Task for user not found"));
+
+        return taskRepository.findByTaskId(account);
     }
+
 
     public Task createTask(String accountId, Task task){
         Account account = accountRepository.findByAccountId(accountId)

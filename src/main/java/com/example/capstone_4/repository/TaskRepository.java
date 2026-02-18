@@ -9,10 +9,9 @@ import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long>{
 
-    //for auto formatting taskId
     Task findTopByOrderByIdDesc();
 
-    Optional<Task> findByTaskId(String taskId);
+    List<Task> findByTaskId(Account account);
 
     Optional<List<Task>> getTaskByTaskId(Account account);
 }
