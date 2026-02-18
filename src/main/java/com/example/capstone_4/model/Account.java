@@ -28,4 +28,7 @@ public class Account {
     @Column(nullable = false)
     private String role;
 
+    @Column(nullable =true)
+    private int taskId;
+
 }
