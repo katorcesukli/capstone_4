@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.example.capstone_4.security.JwtUtil;
 
 import java.util.Map;
 
@@ -19,6 +20,7 @@ import java.util.Map;
 public class AuthController {
 
     private final AccountService accountService;
+    private final JwtUtil jwtUtil;
 
 
     @PostMapping("/register")
@@ -46,11 +48,15 @@ public class AuthController {
             Account account = accountService.login(username, password);
             session.setAttribute("loggedUser", account);
 
+            //JWT Token generate
+            String token = jwtUtil.generateToken(account.getUsername(), account.getRole());
+
 
             // Return role info to frontend for redirect
             return ResponseEntity.ok(Map.of(
+                    "token", token,
                     "username", account.getUsername(),
-                    "role", account.getRole() // "ADMIN" or "CUSTOMER"
+                    "role", account.getRole() // "ADMIN" or "USER"
             ));
 
         } catch (RuntimeException e) {

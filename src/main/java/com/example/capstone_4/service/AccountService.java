@@ -43,7 +43,7 @@ public class AccountService {
     //login
     public Account login(String username, String rawPassword) {
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Invalid username or password"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // Verify the password
         if (!passwordEncoder.matches(rawPassword, account.getPassword())) {
