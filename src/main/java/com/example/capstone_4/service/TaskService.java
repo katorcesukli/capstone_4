@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -44,7 +45,7 @@ public class TaskService {
             Task newTask=new Task();
             newTask.setTaskDate(LocalDate.now());
             newTask.setTaskDescription(taskDescription);
-            newTask.setTaskId(taskId);
+            newTask.setTaskId(user.get());
             newTask.setTaskName(taskName);
             newTask.setTaskStatus(taskStatus);
 
@@ -67,7 +68,7 @@ public class TaskService {
             Task newTask=new Task();
             newTask.setTaskDate(taskDate);
             newTask.setTaskDescription(taskDescription);
-            newTask.setTaskId(taskId);
+            newTask.setTaskId(user.get());
             newTask.setTaskName(taskName);
             newTask.setTaskStatus(taskStatus);
 
@@ -89,7 +90,7 @@ public class TaskService {
             Task updateTask = task.get();
             updateTask.setTaskDate(LocalDate.now());
             updateTask.setTaskDescription(taskDescription);
-            updateTask.setTaskId(taskId);
+            updateTask.setTaskId(user.get());
             updateTask.setTaskName(taskName);
             updateTask.setTaskStatus(taskStatus);
 
@@ -99,7 +100,7 @@ public class TaskService {
         else throw new TaskIdDoesNotExistException("Task with that ID does not exist");
     }
 
-    public Task getByTaskByUserId(String userId){
+    public Task getTaskByUserId(String userId){
         if (accountRepository.findByAccountId(userId).isPresent()){
             Optional<Task> task =taskRepository.getTaskByTaskId(accountRepository.findByAccountId(userId).get());
             return task.orElse(null);
@@ -107,8 +108,7 @@ public class TaskService {
         throw new AccountDoesNotExistException("Account with that Account ID does not exist");
 
     }
-    public Task deleteTask(String username,String taskDescription, String taskId,
-                           String taskName, String taskStatus) {
+    public Task deleteTask(String taskId) {
         Optional<Account> user = accountRepository.findByAccountId(taskId);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with Account ID does not exist");
@@ -119,25 +119,6 @@ public class TaskService {
         return task.get();
 
     }
-
-
-}
-import com.example.capstone_4.service.AccountService;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-
-@Service
-@RequiredArgsConstructor
-public class TaskService {
-
-    private final TaskRepository taskRepository;
-
-    private final AccountRepository accountRepository;
-
-    //method to generate the next formatted Task ID string (e.g., 0001, 0002)
     private String generateNextAccountId() {
         Task lastTask = taskRepository.findTopByOrderByIdDesc();
         long nextId = (lastTask != null) ? lastTask.getId() + 1 : 1;
@@ -183,3 +164,5 @@ public class TaskService {
     }
     //END OF ADMIN CRUD STUFF
 }
+
+

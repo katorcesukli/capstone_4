@@ -1,9 +1,10 @@
 package com.example.capstone_4.controller;
 
 import com.example.capstone_4.Exceptions.AccountDoesNotExistException;
+import com.example.capstone_4.Exceptions.ExcessiveLengthException;
+import com.example.capstone_4.Exceptions.MissingRequiredFieldException;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.service.TaskService;
-import com.example.capstone_4.service.AdminTasksService;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,13 +66,16 @@ public class TaskController {
 
     /*** User accessible Controllers***/
 
-    //for now "/api/tasks/user
+    //for now "/api/tasks/user"
+
+    //Status codes based on the specs
     @GetMapping("/user/{accountId}")
     public ResponseEntity<?> getAllUserTask(@PathVariable("accountId")String accountId){
         try{
-            return ResponseEntity.ok(taskService.getByTaskByUserId(accountId));
+            return ResponseEntity.ok(taskService.getTaskByUserId(accountId));
 
         }catch (Exception e){
+            //Status codes based on spec
             if (e instanceof AccountDoesNotExistException){
                 return ResponseEntity.status(404).body(e.getMessage());
             }else
@@ -80,13 +84,47 @@ public class TaskController {
     }
 
     @PostMapping("/user/{accountId}")
-    public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId){
+    public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId,String taskName,String taskStatus,String taskDescription){
         try{
-            return ResponseEntity.ok(taskService.createTask(accountId,));
+            return ResponseEntity.status(201).body(taskService.createTask(accountId, taskName, taskStatus, taskDescription));
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
                 return ResponseEntity.status(404).body(e.getMessage());
+            }
+            else if (e instanceof ExcessiveLengthException || e instanceof MissingRequiredFieldException){
+                return ResponseEntity.status(400).body(e.getMessage());
+            }else
+                return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @PutMapping("/user/{accountId}")
+    public ResponseEntity<?> updateTask(@PathVariable("accountId")String accountId,String taskName,String taskStatus,String taskDescription){
+        try{
+            return ResponseEntity.status(200).body(taskService.updateTask(accountId, taskName, taskStatus, taskDescription));
+
+        }catch (Exception e){
+            if (e instanceof AccountDoesNotExistException){
+                return ResponseEntity.status(404).body(e.getMessage());
+            }
+            else if (e instanceof ExcessiveLengthException || e instanceof MissingRequiredFieldException){
+                return ResponseEntity.status(400).body(e.getMessage());
+            }else
+                return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+    @DeleteMapping("/user/{accountId}")
+    public ResponseEntity<?> deleteTask(@PathVariable("accountId")String accountId, Long taskId){
+        try{
+            return ResponseEntity.status(204).body(taskService.deleteTask(accountId));
+
+        }catch (Exception e){
+            if (e instanceof AccountDoesNotExistException){
+                return ResponseEntity.status(404).body(e.getMessage());
+            }
+            else if (e instanceof ExcessiveLengthException || e instanceof MissingRequiredFieldException){
+                return ResponseEntity.status(400).body(e.getMessage());
             }else
                 return ResponseEntity.status(500).body(e.getMessage());
         }
