@@ -10,6 +10,7 @@ public class Capstone4Application {
         SpringApplication.run(Capstone4Application.class, args);
 
         //hello test
+        System.out.println("helllo");
     }
 
 }

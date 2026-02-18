@@ -18,18 +18,18 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true)
-    private Integer task_id;
+    @Column(nullable = false, unique = true, name ="task_id")
+    private Integer taskId;
 
-    @Column(nullable = false)
-    private String task_name;
+    @Column(nullable = false, name ="task_name")
+    private String taskName;
 
-    @Column(nullable = false)
-    private String task_description;
+    @Column(nullable = false, name ="task_description")
+    private String taskDescription;
 
-    @Column(nullable = false)
-    private String task_status;
+    @Column(nullable = false, name ="task_status")
+    private String taskStatus;
 
-    @Column(nullable = false)
-    private LocalDate task_date;
+    @Column(nullable = false, name ="task_date")
+    private LocalDate taskDate;
 }
