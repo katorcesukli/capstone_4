@@ -19,7 +19,7 @@ public class Task {
     private Long id;
 
     @Column(nullable = false, unique = true, name ="task_id")
-    private Integer taskId;
+    private String taskId;
 
     @Column(nullable = false, name ="task_name")
     private String taskName;
