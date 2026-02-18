@@ -1,20 +1,18 @@
 package com.example.capstone_4.service;
 
-import com.example.capstone_4.Exceptions.AccountDoesNotExistException;
-import com.example.capstone_4.Exceptions.TaskIdDoesNotExistException;
-import com.example.capstone_4.Exceptions.TaskIdExistsException;
+import com.example.capstone_4.Exceptions.*;
 import com.example.capstone_4.model.Account;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.repository.AccountRepository;
 import com.example.capstone_4.repository.TaskRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
+@Service
 public class TaskService {
 
     private final TaskRepository taskRepository;
@@ -23,11 +21,21 @@ public class TaskService {
         this.taskRepository=taskRepository;
         this.accountRepository =accountRepository;
     }
+
+    private boolean validateEntries(String taskName, String taskDescription){
+        if (taskName == null ||taskName.isEmpty())
+            throw new MissingRequiredFieldException("Task Name cannot be blank");
+        if(taskName.length()>60 )
+            throw new ExcessiveLengthException("Task name is too long. Try to keep it below 60 characters!");
+        if(taskDescription.length()>200)
+            throw new ExcessiveLengthException("Task description is too long. Try to keep it below 200 characters!");
+        return true;
+    }
     //Local date time is automatically localdate.now
     public Task createTask(String taskId,
-                           String taskName, String taskStatus,String taskDescription) throws TaskIdExistsException {
+                           String taskName, String taskStatus,String taskDescription){
         Optional<Account> user = accountRepository.findByAccountId(taskId);
-
+        validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
         Optional<Task> task = taskRepository.getTaskByTaskId(user.get());
@@ -44,11 +52,13 @@ public class TaskService {
             return newTask;
         }
         else throw new TaskIdExistsException("Task with that ID already exists");
+
     }
     //User entered a date
     public Task createTask(LocalDate taskDate, String taskId,
                            String taskName, String taskStatus,String taskDescription){
         Optional<Account> user = accountRepository.findByAccountId(taskId);
+        validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
         Optional<Task> task = taskRepository.getTaskByTaskId(user.get());
@@ -70,6 +80,7 @@ public class TaskService {
     public Task updateTask(String taskDescription, String taskId,
                            String taskName, String taskStatus){
         Optional<Account> user = accountRepository.findByAccountId(taskId);
+        validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
         Optional<Task> task = taskRepository.getTaskByTaskId(user.get());

@@ -1,10 +1,12 @@
 package com.example.capstone_4.controller;
 
+import com.example.capstone_4.Exceptions.AccountDoesNotExistException;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.service.TaskService;
 import com.example.capstone_4.service.AdminTasksService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,8 +16,12 @@ import java.util.List;
 @RequestMapping("/api/tasks") //same lang here, remember the syntax ehh
 @RequiredArgsConstructor
 public class TaskController {
+
+    @Autowired
     private final AdminTasksService adminTaskService;
+    @Autowired
     private final TaskService taskService;
+
     // GET /api/tasks
     @GetMapping
     public ResponseEntity<List<Task>> getAllTasks() {
@@ -53,4 +59,35 @@ public class TaskController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    /*** User accessible Controllers***/
+
+    //for now "/api/tasks/user
+    @GetMapping("/user/{accountId}")
+    public ResponseEntity<?> getAllUserTask(@PathVariable("accountId")String accountId){
+        try{
+            return ResponseEntity.ok(taskService.getByTaskByUserId(accountId));
+
+        }catch (Exception e){
+            if (e instanceof AccountDoesNotExistException){
+                return ResponseEntity.status(404).body(e.getMessage());
+            }else
+                return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    @PostMapping("/user/{accountId}")
+    public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId){
+        try{
+            return ResponseEntity.ok(taskService.createTask(accountId,));
+
+        }catch (Exception e){
+            if (e instanceof AccountDoesNotExistException){
+                return ResponseEntity.status(404).body(e.getMessage());
+            }else
+                return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+
 }
