@@ -21,7 +21,7 @@ async function loadTasks() {
         tasks.forEach(task => {
             const row = document.createElement("tr");
             row.innerHTML = `
-                <td>${task.taskId || ""}</td>
+                <td>${task.taskId ? task.taskId.accountId : ""}</td>
                 <td>${task.taskName}</td>
                 <td>${task.taskDescription}</td>
                 <td>${task.taskStatus}</td>
@@ -39,49 +39,64 @@ async function loadTasks() {
     }
 }
 
-// Save or Update task
-async function saveTask() {
-    const taskData = {
-        taskId: taskIdInput.value.trim(),
-        taskName: taskNameInput.value.trim(),
-        taskDescription: taskDescriptionInput.value.trim(),
-        taskStatus: taskStatusInput.value,
-        taskDate: taskDateInput.value // yyyy-MM-dd format
-    };
+/// Save or Update task
+ async function saveTask() {
+     const taskData = {
+         taskName: taskNameInput.value.trim(),
+         taskDescription: taskDescriptionInput.value.trim(),
+         taskStatus: taskStatusInput.value,
+         taskDate: taskDateInput.value
+     };
 
-    if (!taskData.taskName || !taskData.taskDescription || !taskData.taskDate) {
-        return alert("Please fill in all required fields.");
-    }
+     if (!taskData.taskName || !taskData.taskDescription || !taskData.taskDate) {
+         return alert("Please fill in all required fields.");
+     }
 
-    try {
-        let res;
-        if (taskIdInput.dataset.pk) {
-            // Update existing task using backend id
-            res = await fetch(`${apiUrl}/${taskIdInput.dataset.pk}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(taskData)
-            });
-            if (!res.ok) throw new Error("Failed to update task");
-            alert("Task updated successfully!");
-        } else {
-            // Create new task
-            res = await fetch(apiUrl, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(taskData)
-            });
-            if (!res.ok) throw new Error("Failed to create task");
-            alert("Task created successfully!");
-        }
+     try {
+         let res;
 
-        resetForm();
-        loadTasks();
-    } catch (error) {
-        console.error(error);
-        alert(error.message);
-    }
-}
+         const savedUser = localStorage.getItem("loggedUser");
+         if (!savedUser) return alert("No logged-in user found.");
+         const user = JSON.parse(savedUser);
+
+         if (!user.accountId) return alert("User accountId missing.");
+
+         if (taskIdInput.dataset.pk) {
+             // UPDATE existing task
+             res = await fetch(`${apiUrl}/${taskIdInput.dataset.pk}`, {
+                 method: "PUT",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify(taskData)
+             });
+
+             if (!res.ok) throw new Error("Failed to update task");
+             alert("Task updated successfully!");
+         } else {
+             // CREATE new task
+             // Include accountId in request as query param
+             res = await fetch(`${apiUrl}?accountId=${user.accountId}`, {
+                 method: "POST",
+                 headers: { "Content-Type": "application/json" },
+                 body: JSON.stringify(taskData)
+             });
+
+             if (!res.ok) throw new Error("Failed to create task");
+             const createdTask = await res.json();
+
+             // Display generated taskId immediately
+             taskIdInput.value = createdTask.taskId.accountId || "";
+             alert("Task created successfully!");
+         }
+
+         resetForm();
+         loadTasks();
+
+     } catch (error) {
+         console.error(error);
+         alert(error.message);
+     }
+ }
+
 
 // Edit task
 async function editTask(id) {
@@ -90,7 +105,8 @@ async function editTask(id) {
         if (!res.ok) throw new Error("Task not found");
         const task = await res.json();
 
-        taskIdInput.value = task.taskId || ""; // display only
+        taskIdInput.value = task.taskId ? task.taskId.accountId : "";
+
         taskIdInput.dataset.pk = task.id;       // backend id for PUT
         taskNameInput.value = task.taskName;
         taskDescriptionInput.value = task.taskDescription;
@@ -119,7 +135,8 @@ async function deleteTask(id) {
 
 // Reset form
 function resetForm() {
-    taskIdInput.value = "";
+    taskIdInput.value = task.taskId ? task.taskId.accountId : "";
+
     delete taskIdInput.dataset.pk; // remove backend id
     taskNameInput.value = "";
     taskDescriptionInput.value = "";
@@ -131,6 +148,8 @@ function resetForm() {
 // Event listeners
 saveTaskBtn.addEventListener("click", saveTask);
 resetFormBtn.addEventListener("click", resetForm);
+
+
 
 // Initial load
 loadTasks();

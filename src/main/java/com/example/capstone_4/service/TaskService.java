@@ -2,21 +2,9 @@ package com.example.capstone_4.service;
 
 import com.example.capstone_4.model.Account;
 import com.example.capstone_4.model.Task;
+import com.example.capstone_4.repository.AccountRepository;
 import com.example.capstone_4.repository.TaskRepository;
-
-public class TaskService {
-
-    private TaskRepository taskRepository;
-
-    //method to generate the next formatted Task ID string (e.g., 0001, 0002)
-    private String generateNextAccountId() {
-        Task lastTask = taskRepository.findTopByOrderByIdDesc();
-        long nextId = (lastTask != null) ? lastTask.getId() + 1 : 1;
-        return String.format("%04d", nextId);
-    }
-
-import com.example.capstone_4.model.Task;
-import com.example.capstone_4.repository.TaskRepository;
+import com.example.capstone_4.service.AccountService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +16,15 @@ import java.util.Optional;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+
+    private final AccountRepository accountRepository;
+
+    //method to generate the next formatted Task ID string (e.g., 0001, 0002)
+    private String generateNextAccountId() {
+        Task lastTask = taskRepository.findTopByOrderByIdDesc();
+        long nextId = (lastTask != null) ? lastTask.getId() + 1 : 1;
+        return String.format("%04d", nextId); // e.g., "0001", "0002"
+    }
 
     //ADMIN TASKS CRUD STUFF
     // Get all tasks
@@ -41,7 +38,10 @@ public class TaskService {
     }
 
     // Create new task
-    public Task createNewTask(Task task) {
+    public Task createNewTask(Task task, String accountId) {
+        Account account = accountRepository.findByAccountId(accountId)
+                .orElseThrow(() -> new RuntimeException("Account not found"));
+        task.setTaskId(account);
         return taskRepository.save(task);
     }
 

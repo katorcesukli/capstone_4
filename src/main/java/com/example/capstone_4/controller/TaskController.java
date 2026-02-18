@@ -1,6 +1,8 @@
 package com.example.capstone_4.controller;
 
 import com.example.capstone_4.model.Task;
+import com.example.capstone_4.model.Account;
+import com.example.capstone_4.service.AccountService;
 import com.example.capstone_4.service.TaskService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TaskController {
     private final TaskService taskService;
+    private final AccountService accountService;
 
     // GET /api/tasks
     @GetMapping
@@ -30,8 +33,9 @@ public class TaskController {
 
     // POST /api/tasks
     @PostMapping
-    public ResponseEntity<Task> createNewTask(@RequestBody Task task) {
-        Task createdTask = taskService.createNewTask(task);
+    public ResponseEntity<Task> createNewTask(@RequestBody Task task,@RequestParam String accountId) {
+        // accountId is included in the task JSON from frontend
+        Task createdTask = taskService.createNewTask(task, accountId);
         return ResponseEntity.ok(createdTask);
     }
 
@@ -51,4 +55,6 @@ public class TaskController {
         }
         return ResponseEntity.notFound().build();
     }
+
+
 }
