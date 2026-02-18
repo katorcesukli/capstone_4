@@ -23,7 +23,7 @@ public class JwtUtil {
                 .claim("role", role)
                 .setIssuedAt(new Date())
                 .setExpiration(
-                        new Date(System.currentTimeMillis() + 86400000)
+                        new Date(System.currentTimeMillis() + 604800000) // 1 week token expiry
                 ) // 1 day
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
