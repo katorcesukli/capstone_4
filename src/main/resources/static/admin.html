@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard - Tasks</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<h1>Admin Dashboard - Tasks</h1>
+
+<!-- Task Table -->
+<table id="tasksTable">
+    <thead>
+    <tr>
+        <th>Task ID</th>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Filled by JS -->
+    </tbody>
+</table>
+
+<!-- Task Form -->
+<div class="form-container">
+    <h2 id="formTitle">Create New Task</h2>
+    <label>Task ID: </label>
+    <input type="text" id="taskIdInput" placeholder="Enter task name">
+    <label>Task Name:</label>
+    <input type="text" id="taskNameInput" placeholder="Enter task name">
+    <label>Task Description:</label>
+    <input type="text" id="taskDescriptionInput" placeholder="Enter description">
+    <label>Task Status:</label>
+    <select id="taskStatusInput">
+        <option value="PENDING">PENDING</option>
+        <option value="COMPLETED">COMPLETED</option>
+    </select>
+    <label>Task Date:</label>
+    <input type="date" id="taskDateInput">
+    <br>
+    <button id="saveTaskBtn">Save or Edit Task</button>
+    <button id="resetFormBtn">Reset Form</button>
+</div>
+
+<!-- JS -->
+<script src="js/admin.js"></script>
+</body>
+</html>
+
+
