@@ -7,8 +7,10 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
     // Find by account_id
-    Optional<Account> findByAccountId(Integer accountId);
+    Optional<Account> findByAccountId(String accountId);
 
     // Find by username
     Optional<Account> findByUsername(String username);
+
+    Account findTopByOrderByIdDesc();
 }
