@@ -68,7 +68,7 @@ public class TaskController {
 
     //for now "/api/tasks/user"
 
-    //Status codes based on the specs
+    //Status codes based on the specs test case
     @GetMapping("/user/{accountId}")
     public ResponseEntity<?> getAllUserTask(@PathVariable("accountId")String accountId){
         try{

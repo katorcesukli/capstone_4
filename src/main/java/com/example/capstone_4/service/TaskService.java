@@ -33,9 +33,9 @@ public class TaskService {
         return true;
     }
     //Local date time is automatically localdate.now
-    public Task createTask(String taskId,
+    public Task createTask(String accountId,
                            String taskName, String taskStatus,String taskDescription){
-        Optional<Account> user = accountRepository.findByAccountId(taskId);
+        Optional<Account> user = accountRepository.findByAccountId(accountId);
         validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
@@ -52,13 +52,13 @@ public class TaskService {
             taskRepository.save(newTask);
             return newTask;
         }
-        else throw new TaskIdExistsException("Task with that ID already exists");
+        else throw new TaskIdExistsException("Task for that account ID already exists");
 
     }
     //User entered a date
-    public Task createTask(LocalDate taskDate, String taskId,
+    public Task createTask(LocalDate taskDate, String accountId,
                            String taskName, String taskStatus,String taskDescription){
-        Optional<Account> user = accountRepository.findByAccountId(taskId);
+        Optional<Account> user = accountRepository.findByAccountId(accountId);
         validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
@@ -75,12 +75,12 @@ public class TaskService {
             taskRepository.save(newTask);
             return newTask;
         }
-        else throw new TaskIdExistsException("Task with that ID already exists");
+        else throw new TaskIdExistsException("Task for that account ID already exists");
     }
 
-    public Task updateTask(String taskDescription, String taskId,
+    public Task updateTask(String taskDescription, String accountId,
                            String taskName, String taskStatus){
-        Optional<Account> user = accountRepository.findByAccountId(taskId);
+        Optional<Account> user = accountRepository.findByAccountId(accountId);
         validateEntries(taskName,taskDescription);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with that Account ID does not exist");
@@ -97,24 +97,24 @@ public class TaskService {
             taskRepository.save(updateTask);
             return updateTask;
         }
-        else throw new TaskIdDoesNotExistException("Task with that ID does not exist");
+        else throw new TaskIdDoesNotExistException("Task for that user ID does not exist");
     }
 
-    public Task getTaskByUserId(String userId){
-        if (accountRepository.findByAccountId(userId).isPresent()){
-            Optional<Task> task =taskRepository.getTaskByTaskId(accountRepository.findByAccountId(userId).get());
+    public Task getTaskByUserId(String accountId){
+        if (accountRepository.findByAccountId(accountId).isPresent()){
+            Optional<Task> task =taskRepository.getTaskByTaskId(accountRepository.findByAccountId(accountId).get());
             return task.orElse(null);
         }
         throw new AccountDoesNotExistException("Account with that Account ID does not exist");
 
     }
-    public Task deleteTask(String taskId) {
-        Optional<Account> user = accountRepository.findByAccountId(taskId);
+    public Task deleteTask(String accountId) {
+        Optional<Account> user = accountRepository.findByAccountId(accountId);
         if (user.isEmpty())
             throw new AccountDoesNotExistException("Account with Account ID does not exist");
         Optional<Task> task = taskRepository.getTaskByTaskId(user.get());
         if (task.isEmpty())
-            throw new TaskIdDoesNotExistException("Task with that ID does not exist");
+            throw new TaskIdDoesNotExistException("Task for that account ID does not exist");
         taskRepository.delete(task.get());
         return task.get();
 
