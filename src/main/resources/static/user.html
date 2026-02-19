@@ -18,6 +18,30 @@
         <button id="logoutBtn" class="btn-logout">Logout</button>
     </div>
 
+
+
+    <!-- Tasks Table -->
+    <div class="card">
+        <h2>Your Tasks</h2>
+        <div style="overflow-x:auto;">
+            <table id="tasksTable" class="transaction-table">
+                <thead>
+                <tr>
+                    <th>Account ID</th>
+                    <th>Title</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Filled by JS -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <!-- Task Form -->
     <div class="card">
         <h2 id="formTitle">Create / Edit Task</h2>
@@ -54,28 +78,6 @@
             <button type="button" id="saveTaskBtn" class="btn-primary">Save Task</button>
             <button type="button" id="resetFormBtn" class="btn-refresh" style="margin-top:10px;">Reset Form</button>
         </form>
-    </div>
-
-    <!-- Tasks Table -->
-    <div class="card">
-        <h2>Your Tasks</h2>
-        <div style="overflow-x:auto;">
-            <table id="tasksTable" class="transaction-table">
-                <thead>
-                <tr>
-                    <th>Account ID</th>
-                    <th>Title</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th>Date</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-                <!-- Filled by JS -->
-                </tbody>
-            </table>
-        </div>
     </div>
 
 </div>
