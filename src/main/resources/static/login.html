@@ -1,40 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
     <title>Login</title>
-    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<div class="auth-container">
-    <div class="auth-card">
-        <div class="auth-header">
-            <h1>Task Tracking App</h1> <!-- Replace with your app logo/text -->
-            <p>Sign in to your account</p>
-        </div>
+<h2>Login</h2>
 
-        <div class="form-group">
-            <label for="username">Username</label>
-            <input type="text" id="username" placeholder="Enter your username" required>
-        </div>
+<input type="text" id="username" placeholder="Username"><br><br>
+<input type="password" id="password" placeholder="Password"><br><br>
 
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" id="password" placeholder="Enter your password" required>
-        </div>
+<button id="loginBtn">Login</button>
 
-        <button id="loginBtn">Login</button>
+<p id="error" style="color:red;"></p>
 
-        <p id="error" class="text-danger" style="text-align:center; margin-top:15px;"></p>
+<script src="/js/login.js"></script>
 
-        <!-- Register Link -->
-        <p style="text-align:center; margin-top:20px; font-size:0.9rem;">
-            Don't have an account? <a href="register.html" style="color: var(--primary-blue); text-decoration: none;">Register</a>
-        </p>
-    </div>
-</div>
-
-<script src="js/login.js"></script>
 </body>
 </html>
