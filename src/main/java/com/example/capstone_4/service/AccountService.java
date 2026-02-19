@@ -4,6 +4,7 @@ import com.example.capstone_4.model.Account;
 import com.example.capstone_4.repository.AccountRepository;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 public class AccountService {
 
     private final AccountRepository accountRepository;
+    private final PasswordEncoder passwordEncoder;
 
     //method to generate the next formatted Account ID string (e.g., 0001, 0002)
     private String generateNextAccountId() {
@@ -31,26 +33,26 @@ public class AccountService {
         // FIX: Replaced UUID logic with the formatted sequence logic
         account.setAccountId(generateNextAccountId());
 
+        //password hash
+        account.setPassword(passwordEncoder.encode(account.getPassword()));
+
         return accountRepository.save(account);
     }
 
 
     //login
-    public Account login(String username, String password) {
+    public Account login(String username, String rawPassword) {
         Account account = accountRepository.findByUsername(username)
-                .orElseThrow(() -> new RuntimeException("Account not found"));
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
-        // Validation: Prevent login for disabled users
-        if ("DISABLED".equalsIgnoreCase(account.getRole())) {
-            throw new RuntimeException("This account has been disabled. Please contact support.");
-        }
-
-        if (!account.getPassword().equals(password)) {
+        // Verify the password
+        if (!passwordEncoder.matches(rawPassword, account.getPassword())) {
             throw new RuntimeException("Invalid username or password");
         }
+
         return account;
+    }
 
     }
 
 
-}
