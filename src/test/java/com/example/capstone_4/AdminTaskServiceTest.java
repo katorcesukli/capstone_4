@@ -1,12 +1,15 @@
 package com.example.capstone_4;
 
+import com.example.capstone_4.model.Account;
 import com.example.capstone_4.model.Task;
+import com.example.capstone_4.repository.AccountRepository;
 import com.example.capstone_4.repository.TaskRepository;
 import com.example.capstone_4.service.AdminTasksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.time.LocalDate;
@@ -25,6 +28,12 @@ class AdminTasksServiceTest {
 
     @MockitoBean
     private TaskRepository taskRepository;
+
+    @MockitoBean
+    private AccountRepository accountRepository;
+
+    @MockitoBean
+    private PasswordEncoder passwordEncoder;
 
     private Task task1;
     private Task task2;
@@ -131,4 +140,109 @@ class AdminTasksServiceTest {
         assertFalse(deleted);
         verify(taskRepository, never()).delete(any());
     }
+
+    //USERS TEST
+    private Account user1;
+    private Account user2;
+
+    @BeforeEach
+    void setUpUsers() {
+        user1 = new Account();
+        user1.setAccountId("U001");
+        user1.setUsername("Alice");
+        user1.setPassword("pass1");
+        user1.setRole("USER");
+
+        user2 = new Account();
+        user2.setAccountId("U002");
+        user2.setUsername("Bob");
+        user2.setPassword("pass2");
+        user2.setRole("ADMIN");
+    }
+
+    // =========================
+    // GET ALL USERS
+    // =========================
+    @Test
+    void testGetAllUsers() {
+        when(accountRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+
+        List<Account> users = adminTasksService.getAllUsers();
+
+        assertEquals(2, users.size());
+        // Passwords should be null
+        assertNull(users.get(0).getPassword());
+        assertNull(users.get(1).getPassword());
+        verify(accountRepository).findAll();
+    }
+
+    // =========================
+    // GET USER BY ACCOUNT ID
+    // =========================
+    @Test
+    void testGetUserByAccountId() {
+        when(accountRepository.findByAccountId("U001")).thenReturn(Optional.of(user1));
+
+        Optional<Account> user = adminTasksService.getUserByAccountId("U001");
+
+        assertTrue(user.isPresent());
+        assertEquals("Alice", user.get().getUsername());
+        assertNull(user.get().getPassword());
+        verify(accountRepository).findByAccountId("U001");
+    }
+
+    // =========================
+    // CREATE USER
+    // =========================
+    @Test
+    void testCreateUser() {
+        when(passwordEncoder.encode("pass1")).thenReturn("encodedPass1");
+        when(accountRepository.save(any(Account.class))).thenReturn(user1);
+
+        Account created = adminTasksService.createUser(user1);
+
+        assertEquals("USER", created.getRole());
+        assertEquals("encodedPass1", created.getPassword());
+        verify(passwordEncoder).encode("pass1");
+        verify(accountRepository).save(user1);
+    }
+
+    // =========================
+    // UPDATE USER
+    // =========================
+    @Test
+    void testUpdateUser() {
+        Account updatedData = new Account();
+        updatedData.setUsername("AliceUpdated");
+        updatedData.setPassword("newpass");
+        updatedData.setRole("ADMIN");
+
+        when(accountRepository.findByAccountId("U001")).thenReturn(Optional.of(user1));
+        when(passwordEncoder.encode("newpass")).thenReturn("encodedNewPass");
+        when(accountRepository.save(any(Account.class))).thenReturn(user1);
+
+        Optional<Account> updated = adminTasksService.updateUser("U001", updatedData);
+
+        assertTrue(updated.isPresent());
+        assertEquals("AliceUpdated", updated.get().getUsername());
+        assertEquals("ADMIN", updated.get().getRole());
+        assertNull(updated.get().getPassword()); // password is never returned
+        verify(accountRepository).findByAccountId("U001");
+        verify(accountRepository).save(user1);
+    }
+
+    // =========================
+    // DELETE USER
+    // =========================
+    @Test
+    void testDeleteUser() {
+        when(accountRepository.findByAccountId("U001")).thenReturn(Optional.of(user1));
+        when(accountRepository.findAll()).thenReturn(Arrays.asList(user1, user2));
+
+        boolean deleted = adminTasksService.deleteUser("U001");
+
+        assertTrue(deleted);
+        verify(accountRepository).delete(user1);
+    }
+
 }
