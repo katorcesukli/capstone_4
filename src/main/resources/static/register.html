@@ -1,20 +1,35 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
     <title>Register</title>
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h2>Register</h2>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Task Tracking App</h1> <!-- Replace with your app logo/text -->
+            <p>Create a new account</p>
+        </div>
 
-<input type="text" id="username" placeholder="Username"><br><br>
-<input type="password" id="password" placeholder="Password"><br><br>
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" placeholder="Enter your username" required>
+        </div>
 
-<button onclick="register()">Register</button>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" placeholder="Enter your password" required>
+        </div>
 
-<p id="error" style="color:red;"></p>
+        <button onclick="register()">Register</button>
 
-<script src="/js/register.js"></script>
+        <p id="error" class="text-danger" style="text-align:center; margin-top:15px;"></p>
+    </div>
+</div>
 
+<script src="js/register.js"></script>
 </body>
 </html>
