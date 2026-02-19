@@ -50,6 +50,41 @@
     <button id="resetFormBtn">Reset Form</button>
 </div>
 
+<!-- ================= USERS ================= -->
+<h3>Users Management</h3>
+
+<table id="usersTable">
+    <thead>
+    <tr>
+        <th>Account ID</th>
+        <th>Username</th>
+        <th>Role</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <!-- Filled by JS -->
+    </tbody>
+</table>
+
+<div class="form-container">
+    <h2 id="userFormTitle">Create New User</h2>
+    <label>Account ID:</label>
+    <input type="text" id="userIdInput" placeholder="Auto-generated" readonly>
+    <label>Username:</label>
+    <input type="text" id="usernameInput" placeholder="Enter username">
+    <label>Password:</label>
+    <input type="password" id="passwordInput" placeholder="Enter password">
+    <label>Role:</label>
+    <select id="roleInput">
+        <option value="USER">USER</option>
+        <option value="ADMIN">ADMIN</option>
+    </select>
+    <br>
+    <button id="saveUserBtn">Save or Edit User</button>
+    <button id="resetUserFormBtn">Reset Form</button>
+</div>
+
 <!-- JS -->
 <script src="js/admin.js"></script>
 <script src="js/app.js"></script>
