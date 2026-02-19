@@ -56,7 +56,8 @@ public class AuthController {
             return ResponseEntity.ok(Map.of(
                     "token", token,
                     "username", account.getUsername(),
-                    "role", account.getRole() // "ADMIN" or "USER"
+                    "role", account.getRole(), // "ADMIN" or "CUSTOMER"
+                    "accountId", account.getAccountId()
             ));
 
         } catch (RuntimeException e) {

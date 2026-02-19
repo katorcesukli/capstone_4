@@ -57,6 +57,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 if (!data.token) {
                     throw new Error("No token received from server");
+            .then(user => {
+            console.log("FULL LOGIN RESPONSE:", user);
+                const sessionUser = {
+                        username: user.username,
+                        role: user.role,
+                        accountId: user.accountId || user.account_id // handles both camelCase and snake_case
+                    };
+
+
+
+                localStorage.setItem(sessionKey, JSON.stringify(sessionUser));
+                console.log("Login successful. Role:", sessionUser.role);
+                console.log("Account ID:", sessionUser.accountId);
+
+                if (user.role && user.role.toUpperCase() === 'ADMIN') {
+                    window.location.href = 'admin.html';
+                } else {
+                    window.location.href = 'user.html';
                 }
 
                 // Save JWT token

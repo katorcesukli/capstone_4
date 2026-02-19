@@ -1,20 +1,59 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>User Page</title>
+    <title>User Dashboard</title>
+    <link rel="stylesheet" href="user.css">
 </head>
 <body>
-<nav class="navbar">
-    <div class="nav-brand">Task Tracker</div>
-    <div class="nav-user">
-        <span>Welcome, <strong id="username-display"></strong></span>
-        <button id="logoutBtn" style="margin-left: 15px; background: #dc3545; color: white; border: none; padding: 5px 12px; cursor: pointer; border-radius: 4px;">Logout</button>
-    </div>
-</nav>
+<h1>User Dashboard</h1>
+<h2>Welcome, <span id="username-display"></span></h2>
+<button id="logoutBtn">Logout</button>
+
+<h3 id="formTitle">Create New Task</h3>
+<form id="taskForm">
+    <!-- Hidden field to store taskId (display only) -->
+    <input type="text" id="taskIdInput" placeholder="Task ID" readonly>
+
+    <label for="taskNameInput">Title:</label>
+    <input type="text" id="taskNameInput" placeholder="Task Title" required><br><br>
+
+    <label for="taskDescriptionInput">Description:</label>
+    <input type="text" id="taskDescriptionInput" placeholder="Task Description" required><br><br>
+
+    <label for="taskStatusInput">Status:</label>
+    <select id="taskStatusInput">
+        <option value="PENDING">PENDING</option>
+        <option value="IN_PROGRESS">IN_PROGRESS</option>
+        <option value="COMPLETED">COMPLETED</option>
+    </select><br><br>
+
+    <label for="taskDateInput">Date:</label>
+    <input type="date" id="taskDateInput" required><br><br>
+
+    <button type="button" id="saveTaskBtn">Save Task</button>
+    <button type="button" id="resetFormBtn">Reset Form</button>
+</form>
+
+<h3>Your Tasks</h3>
+<table id="tasksTable">
+    <thead>
+    <tr>
+        <th>Account ID</th>
+        <th>Title</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Date</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+
+
+<!-- Scripts -->
+<script src="js/user.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>

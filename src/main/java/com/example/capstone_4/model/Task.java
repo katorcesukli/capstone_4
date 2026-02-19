@@ -1,5 +1,6 @@
 package com.example.capstone_4.model;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -18,8 +19,10 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, name ="task_id")
-    private String taskId;
+
+    @ManyToOne
+    @JoinColumn(name = "account_id" ,referencedColumnName = "account_id")
+    private Account taskId;
 
     @Column(nullable = false, name ="task_name")
     private String taskName;
@@ -31,5 +34,6 @@ public class Task {
     private String taskStatus;
 
     @Column(nullable = false, name ="task_date")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate taskDate;
 }
