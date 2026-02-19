@@ -1,4 +1,5 @@
 const apiUrl = "/api/tasks";
+const usersApiUrl = "/api/auth";
 
 const tasksTableBody = document.querySelector("#tasksTable tbody");
 const taskIdInput = document.querySelector("#taskIdInput"); // display only
@@ -9,6 +10,16 @@ const taskDateInput = document.querySelector("#taskDateInput");
 const saveTaskBtn = document.querySelector("#saveTaskBtn");
 const resetFormBtn = document.querySelector("#resetFormBtn");
 const formTitle = document.querySelector("#formTitle");
+
+// ================= USER ELEMENTS =================
+const usersTableBody = document.querySelector("#usersTable tbody");
+const userIdInput = document.querySelector("#userIdInput");
+const usernameInput = document.querySelector("#usernameInput");
+const passwordInput = document.querySelector("#passwordInput");
+const roleInput = document.querySelector("#roleInput");
+const saveUserBtn = document.querySelector("#saveUserBtn");
+const resetUserFormBtn = document.querySelector("#resetUserFormBtn");
+const userFormTitle = document.querySelector("#userFormTitle");
 
 // ----------------- Load Tasks -----------------
 async function loadTasks() {
@@ -164,12 +175,128 @@ function resetForm() {
     formTitle.textContent = "Create New Task";
 }
 
+//USER STUFF TO TEST HERE
+// Load all users
+async function loadUsers() {
+    try {
+        const res = await fetch(usersApiUrl);
+        if (!res.ok) throw new Error("Failed to load users");
+        const users = await res.json();
+
+        usersTableBody.innerHTML = "";
+        users.forEach(u => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${u.accountId}</td>
+                <td>${u.username}</td>
+                <td>${u.role}</td>
+                <td>
+                    <button class="edit-btn">Edit</button>
+                    <button class="delete-btn">Delete</button>
+                </td>
+            `;
+
+            row.querySelector(".edit-btn").addEventListener("click", () => editUser(u.accountId));
+            row.querySelector(".delete-btn").addEventListener("click", () => deleteUser(u.accountId));
+            usersTableBody.appendChild(row);
+        });
+    } catch (error) {
+        console.error(error);
+        alert("Error loading users.");
+    }
+}
+
+// Save or update user
+async function saveUser() {
+    const userData = {
+        username: usernameInput.value.trim(),
+        password: passwordInput.value,
+        role: roleInput.value.toUpperCase()
+    };
+
+    if (!userData.username || (!userIdInput.dataset.pk && !userData.password) || !userData.role) {
+        return alert("Please fill in all required fields.");
+    }
+
+    try {
+        let res;
+        if (userIdInput.dataset.pk) {
+            // Update user
+            res = await fetch(`${usersApiUrl}/edit/${userIdInput.dataset.pk}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            });
+        } else {
+            // Create user
+            res = await fetch(usersApiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(userData)
+            });
+        }
+
+        if (!res.ok) throw new Error("Failed to save user");
+        alert("User saved successfully!");
+        resetUserForm();
+        await loadUsers();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// Edit user
+async function editUser(accountId) {
+    try {
+        const res = await fetch(`${usersApiUrl}/${accountId}`);
+        if (!res.ok) throw new Error("User not found");
+        const user = await res.json();
+
+        userIdInput.dataset.pk = user.accountId;
+        usernameInput.value = user.username;
+        passwordInput.value = "";
+        roleInput.value = user.role;
+        userFormTitle.textContent = "Edit User";
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// Delete user
+async function deleteUser(accountId) {
+    if (!confirm("Are you sure you want to delete this user?")) return;
+    try {
+        const res = await fetch(`${usersApiUrl}/${accountId}`, { method: "DELETE" });
+        if (!res.ok) throw new Error("Failed to delete user");
+        alert("User deleted successfully!");
+        resetUserForm();
+        await loadUsers();
+    } catch (error) {
+        console.error(error);
+        alert(error.message);
+    }
+}
+
+// Reset user form
+function resetUserForm() {
+    userIdInput.value = "";
+    delete userIdInput.dataset.pk;
+    usernameInput.value = "";
+    passwordInput.value = "";
+    roleInput.value = "USER";
+    userFormTitle.textContent = "Create New User";
+}
+
 
 // Event listeners
 saveTaskBtn.addEventListener("click", saveTask);
 resetFormBtn.addEventListener("click", resetForm);
 
-
+saveUserBtn.addEventListener("click", saveUser);
+resetUserFormBtn.addEventListener("click", resetUserForm);
 
 // Initial load
 loadTasks();
+loadUsers();
