@@ -48,7 +48,6 @@ public class Tests {
         sampleTask.setTaskStatus("In Progress");
         sampleTask.setTaskId(userAccountTest);
 
-
         taskRepository.save(sampleTask);
 
         /*

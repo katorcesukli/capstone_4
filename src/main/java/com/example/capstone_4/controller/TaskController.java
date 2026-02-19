@@ -51,9 +51,9 @@ public class TaskController {
 
         } catch (Exception e) {
             if (e instanceof MissingRequiredFieldException || e instanceof ExcessiveLengthException)
-                return ResponseEntity.status(400).body("Error:"+ e.getMessage());
+                return ResponseEntity.status(400).body("Error: "+ e.getMessage());
             else
-                return ResponseEntity.status(500).body("Error:"+e.getMessage());
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
 
         }
     }
@@ -85,9 +85,9 @@ public class TaskController {
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body(e.getMessage());
+                return ResponseEntity.status(404).body("Error: "+e.getMessage());
             }else
-                return ResponseEntity.status(500).body(e.getMessage());
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
         }
     }
 
@@ -98,9 +98,9 @@ public class TaskController {
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body(e.getMessage());
+                return ResponseEntity.status(404).body("Error: "+e.getMessage());
             }else
-                return ResponseEntity.status(500).body(e.getMessage());
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
         }
     }
 

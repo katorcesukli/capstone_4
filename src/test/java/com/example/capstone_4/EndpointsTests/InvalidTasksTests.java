@@ -13,8 +13,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
+/**
+ * Tests all the invalid entries
+ * */
 @AutoConfigureMockMvc
 @SpringBootTest
 @Transactional
@@ -82,7 +87,6 @@ public class InvalidTasksTests extends Tests {
         successTask.put("taskStatus","In progress");
         successTask.put("taskDate",String.valueOf(LocalDate.now()));
 
-
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequestBody = objectMapper.writeValueAsString(successTask);
         MvcResult result = mockMvc.perform(post("/api/tasks")
@@ -90,6 +94,8 @@ public class InvalidTasksTests extends Tests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequestBody))
                 .andExpect(status().isBadRequest())
+                .andExpect(content().string("Error: Task description is too long. Max 200 characters allowed"))
+
                 .andReturn();
 
     }
@@ -102,7 +108,6 @@ public class InvalidTasksTests extends Tests {
         successTask.put("taskStatus","In progress");
         successTask.put("taskDate",String.valueOf(LocalDate.now()));
 
-
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequestBody = objectMapper.writeValueAsString(successTask);
         MvcResult result = mockMvc.perform(post("/api/tasks")
@@ -110,6 +115,7 @@ public class InvalidTasksTests extends Tests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequestBody))
                 .andExpect(status().isBadRequest())
+                .andExpect(content().string("Error: Task name is too long. Max 60 characters allowed"))
                 .andReturn();
 
     }
