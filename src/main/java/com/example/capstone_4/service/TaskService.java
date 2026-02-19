@@ -27,7 +27,7 @@ public class TaskService {
             throw new MissingRequiredFieldException("Task Name cannot be blank");
         if (taskName.length() > 60)
             throw new ExcessiveLengthException("Task name is too long. Max 60 characters allowed");
-        if (taskDescription.length() > 200)
+        if (taskDescription!=null && taskDescription.length() > 200)
             throw new ExcessiveLengthException("Task description is too long. Max 200 characters allowed");
     }
 
