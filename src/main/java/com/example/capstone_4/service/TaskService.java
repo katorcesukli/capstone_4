@@ -20,6 +20,13 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final AccountRepository accountRepository;
+    private final AccountService accountService;
+
+    protected String generateNextAccountId() {
+        Task lastTask = taskRepository.findTopByOrderByIdDesc();
+        long nextId = (lastTask != null) ? lastTask.getId() + 1 : 1;
+        return String.format("%04d", nextId);
+    }
 
     /*** Validation ***/
     private void validateEntries(String taskName, String taskDescription){
@@ -40,6 +47,10 @@ public class TaskService {
         return taskRepository.findById(id);
     }
 
+    public List<Task> getTaskByStringTaskId(String stringTaskId){
+        return taskRepository.findByStringTaskId(stringTaskId);
+    }
+
     public Task createNewTask(Task task, String accountId) {
         Account account = accountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AccountDoesNotExistException("Account not found: " + accountId));
@@ -48,6 +59,7 @@ public class TaskService {
         if (task.getTaskDate() == null) {
             task.setTaskDate(LocalDate.now());
         }
+        task.setStringTaskId(generateNextAccountId());
         return taskRepository.save(task);
     }
 
@@ -86,6 +98,7 @@ public class TaskService {
         if (task.getTaskDate() == null) {
             task.setTaskDate(LocalDate.now());
         }
+
         return taskRepository.save(task);
     }
 

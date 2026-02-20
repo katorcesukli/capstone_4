@@ -24,6 +24,9 @@ public class Task {
     @JoinColumn(name = "account_id" ,referencedColumnName = "account_id")
     private Account taskId;
 
+    @Column(name ="task_id")
+    private String stringTaskId;
+
     @Column(nullable = false, name ="task_name")
     private String taskName;
 
