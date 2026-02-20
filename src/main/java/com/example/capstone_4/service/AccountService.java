@@ -16,7 +16,7 @@ public class AccountService {
     private final PasswordEncoder passwordEncoder;
 
     //method to generate the next formatted Account ID string (e.g., 0001, 0002)
-    private String generateNextAccountId() {
+    protected String generateNextAccountId() {
         Account lastAccount = accountRepository.findTopByOrderByIdDesc();
         long nextId = (lastAccount != null) ? lastAccount.getId() + 1 : 1;
         return String.format("%04d", nextId);

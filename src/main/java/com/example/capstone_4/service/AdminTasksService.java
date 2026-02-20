@@ -18,6 +18,7 @@ public class AdminTasksService {
     private final TaskRepository taskRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
+    private final AccountService accountService;
 
     //ADMIN TASKS CRUD STUFF
     // Get all tasks
@@ -70,6 +71,7 @@ public class AdminTasksService {
     public Account createUser(Account account) {
         account.setPassword(passwordEncoder.encode(account.getPassword()));
         account.setRole(account.getRole().toUpperCase());
+        account.setAccountId(accountService.generateNextAccountId());
         return accountRepository.save(account);
     }
 

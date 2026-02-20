@@ -22,6 +22,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/tasks") //same lang here, remember the syntax ehh
 @RequiredArgsConstructor
+@CrossOrigin(origins = "http://localhost:5173", allowedHeaders = "*", allowCredentials = "true")
 public class TaskController {
     private final TaskService taskService;
     private final AccountService accountService;
