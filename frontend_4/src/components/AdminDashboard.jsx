@@ -9,6 +9,7 @@ const TOKEN_KEY = "jwtToken";
 function AdminDashboard() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [taskId, setTaskId] = useState('');
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
@@ -17,6 +18,9 @@ function AdminDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [stringTaskId, setStringTaskId] = useState("");
+  const [error, setError] = useState("");
+  const [isSearching, setIsSearching] = useState(false); 
 
   // User management state
   const [users, setUsers] = useState([]);
@@ -52,7 +56,9 @@ function AdminDashboard() {
       const response = await axios.get(`${BASE_URL}/tasks`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      setAllTasks(response.data);
       setTasks(response.data);
+      setIsSearching(false);
     } catch (error) {
       console.error(error);
       alert("Error loading tasks.");
@@ -250,6 +256,38 @@ function AdminDashboard() {
     setEditingUserId(null);
   };
 
+   const searchTask = async () => {
+        try {
+
+            if (!stringTaskId.trim()) {
+                setError("Please enter a Task ID");
+                return;
+            }
+
+            setError("");
+
+            const response = await axios.get(
+                `${BASE_URL}/tasks/id/${stringTaskId}`
+            );
+
+            setTasks(response.data);
+            setIsSearching(true);
+
+        } catch (err) {
+            console.error(err);
+            setError("Task not found");
+            setTasks([]);
+            setIsSearching(true);
+        }
+    };
+
+    const clearSearch = () => {
+        setStringTaskId("");
+        setError("");
+        setTasks(allTasks);
+        setIsSearching(false);
+    };
+
   if (!user) return <div>Loading...</div>;
 
   return (
@@ -266,55 +304,129 @@ function AdminDashboard() {
         </div>
 
         {/* Tasks Display */}
-        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-200">
-          <div className="flex justify-between items-center mb-6">
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">All Tasks</h2>
+            
+            <label className=" text-sm font-medium text-gray-700 mr-2 ml-120">Search Task by ID:</label>
+            <input
+                type="text"
+                placeholder="Enter String Task ID"
+                value={stringTaskId}
+                onChange={(e) => setStringTaskId(e.target.value)}
+                className="px-3 py-2 border border-gray-300 rounded-lg"
+            />
+
+            <button onClick={searchTask} className="ml-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
+                  Search
+                </button>
+
+            {isSearching && (
+                <button onClick={clearSearch} className="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
+                    Clear Search
+                </button>
+            )}
+
             <button
               onClick={() => setShowEditModal(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2 ml-5"
             >
               <span>+ New Task</span>
             </button>
+
+            {error && <p style={{ color: "red" }}>{error}</p>}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tasks.map(task => (
-              <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName}</h3>
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
-                    task.taskStatus === 'IN-PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
-                    'bg-gray-100 text-gray-800'
-                  }`}>
-                    {task.taskStatus}
-                  </span>
+
+          {error && <p style={{ color: "red" }} className="mb-4">{error}</p>}
+
+          {isSearching && tasks.length > 0 && (
+            <div className="mb-4">
+              <p className="text-gray-700 font-medium">Search Results:</p>
+            </div>
+          )}
+            
+
+
+          {!isSearching && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allTasks.map(task => (
+                <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">{task.taskName}<span className="text-gray-600 mb-4"> #{task.stringTaskId}</span></h3>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                      task.taskStatus === 'IN-PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {task.taskStatus}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-4">{task.taskDescription}</p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>Account ID: {task.taskId?.accountId || ''}</p>
+                    <p>Due: {task.taskDate}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => editTask(task)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <p className="text-gray-600 mb-4">{task.taskDescription}</p>
-                <div className="text-sm text-gray-500 mb-4">
-                  <p>Account ID: {task.taskId?.accountId || ''}</p>
-                  <p>Due: {task.taskDate}</p>
+              ))}
+            </div>
+          )}
+
+          {isSearching && tasks.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tasks.map(task => (
+                <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
+                  <div className="flex justify-between items-start mb-4">
+                    <h3 className="text-lg font-semibold text-gray-800">{task.taskName}</h3>
+                    <p className="text-gray-600 mb-4">#{task.stringTaskId}</p>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                      task.taskStatus === 'IN-PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
+                      'bg-gray-100 text-gray-800'
+                    }`}>
+                      {task.taskStatus}
+                    </span>
+                  </div>
+                  <p className="text-gray-600 mb-4">{task.taskDescription}</p>
+                  <div className="text-sm text-gray-500 mb-4">
+                    <p>Account ID: {task.taskId?.accountId || ''}</p>
+                    <p>Due: {task.taskDate}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => editTask(task)}
+                      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => deleteTask(task.id)}
+                      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => editTask(task)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => deleteTask(task.id)}
-                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Users Management Section */}
-        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-200">
+        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-200 mt-10">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
             <button

@@ -15,6 +15,9 @@ public interface TaskRepository extends JpaRepository<Task, Long>{
     //@Query("SELECT t FROM Task t ORDER BY t.taskDate ASC")
     List<Task> findByTaskIdOrderByTaskDate(Account account);
     List<Task> findByTaskId(Account account);
+
+    List<Task> findByStringTaskId(String stringTaskId);
+
     Optional<List<Task>> getTaskByTaskId(Account account);
 
     @Query("SELECT t FROM Task t ORDER BY t.taskDate ASC")

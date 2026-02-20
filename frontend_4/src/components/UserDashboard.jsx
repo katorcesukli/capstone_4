@@ -9,6 +9,7 @@ const TOKEN_KEY = "jwtToken";
 function UserDashboard() {
   const [user, setUser] = useState(null);
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [taskId, setTaskId] = useState('');
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
@@ -17,6 +18,9 @@ function UserDashboard() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [stringTaskId, setStringTaskId] = useState("");
+  const [error, setError] = useState("");
+  const [isSearching, setIsSearching] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +42,9 @@ function UserDashboard() {
       const response = await axios.get(`${BASE_URL}/tasks/user/${user.accountId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      setAllTasks(response.data);
       setTasks(response.data);
+      setIsSearching(false);
     } catch (error) {
       console.error(error);
       alert("Error loading tasks: " + (error.response?.data?.message||error.response?.data?.Error || error.message));
@@ -156,6 +162,37 @@ function UserDashboard() {
     navigate('/login');
   };
 
+  const searchTask = async () => {
+    try {
+      if (!stringTaskId.trim()) {
+        setError("Please enter a Task ID");
+        return;
+      }
+
+      setError("");
+
+      const response = await axios.get(
+        `${BASE_URL}/tasks/id/${stringTaskId}`
+      );
+
+      setTasks(response.data);
+      setIsSearching(true);
+
+    } catch (err) {
+      console.error(err);
+      setError("Task not found");
+      setTasks([]);
+      setIsSearching(true);
+    }
+  };
+
+  const clearSearch = () => {
+    setStringTaskId("");
+    setError("");
+    setTasks(allTasks);
+    setIsSearching(false);
+  };
+
   if (!user) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">Loading...</div>;
 
   return (
@@ -175,18 +212,48 @@ function UserDashboard() {
         <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">My Tasks</h2>
-            <button
-              onClick={() => setShowEditModal(true)}
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
-            >
-              <span>+ New Task</span>
-            </button>
+            <div className="flex gap-4 items-center">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mr-2">Search Task by ID:</label>
+                <input
+                  type="text"
+                  placeholder="Enter String Task ID"
+                  value={stringTaskId}
+                  onChange={(e) => setStringTaskId(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <button onClick={searchTask} className="ml-2 bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
+                  Search
+                </button>
+                {isSearching && (
+                  <button onClick={clearSearch} className="ml-2 bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200">
+                    Clear Search
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setShowEditModal(true)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
+              >
+                <span>+ New Task</span>
+              </button>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {tasks.map(task => (
+
+          {error && <p style={{ color: "red" }} className="mb-4">{error}</p>}
+
+          {isSearching && tasks.length > 0 && (
+            <div className="mb-4">
+              <p className="text-gray-700 font-medium">Search Results:</p>
+            </div>
+          )}
+
+          {!isSearching && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {allTasks.map(task => (
               <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
                 <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName}</h3>
+                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName}<span className="text-gray-600 mb-4">#{task.stringTaskId}</span></h3>
                   <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                     task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
                     task.taskStatus === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
@@ -216,7 +283,46 @@ function UserDashboard() {
                 </div>
               </div>
             ))}
-          </div>
+            </div>
+          )}
+
+          {isSearching && tasks.length > 0 && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {tasks.map(task => (
+              <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName} <span className="text-gray-600 mb-4">#{task.stringTaskId}</span></h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                    task.taskStatus === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {task.taskStatus.replace('_', '-')}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">{task.taskDescription}</p>
+                <div className="text-sm text-gray-500 mb-4">
+                  <p>Account ID: {task.taskId?.accountId || ''}</p>
+                  <p>Due: {task.taskDate}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => editTask(task)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
+            </div>
+          )}
         </div>
       </div>
 
