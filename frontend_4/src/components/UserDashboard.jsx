@@ -48,7 +48,7 @@ function UserDashboard() {
       setIsSearching(false);
     } catch (error) {
       console.error(error);
-      alert("Error loading tasks: " + (error.response?.data?.message || error.message));
+      alert("Error loading tasks: " + (error.response?.data?.message||error.response?.data?.Error || error.message));
     }
   };
 
@@ -363,7 +363,7 @@ function UserDashboard() {
               <div className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="text"
                       value={taskId}
@@ -373,7 +373,7 @@ function UserDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Title:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700 required-label">Task Title:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="text"
                       value={taskName}
@@ -383,7 +383,7 @@ function UserDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Status:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Status:<span style={{ color: 'red' }}>*</span></label>
                     <select
                       value={taskStatus}
                       onChange={(e) => setTaskStatus(e.target.value)}
@@ -395,7 +395,7 @@ function UserDashboard() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Due Date:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Due Date:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="date"
                       value={taskDate}
@@ -404,7 +404,7 @@ function UserDashboard() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Description:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Description:<span style={{ color: 'red' }}>*</span></label>
                     <textarea
                       value={taskDescription}
                       onChange={(e) => setTaskDescription(e.target.value)}

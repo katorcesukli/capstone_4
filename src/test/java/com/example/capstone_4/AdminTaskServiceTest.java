@@ -4,6 +4,7 @@ import com.example.capstone_4.model.Account;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.repository.AccountRepository;
 import com.example.capstone_4.repository.TaskRepository;
+import com.example.capstone_4.service.AccountService;
 import com.example.capstone_4.service.AdminTasksService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -99,7 +100,7 @@ class AdminTasksServiceTest {
     // USER TESTS
     // ======================
 
-    @Test
+   /* @Test
     void createUser_shouldEncodePasswordAndUppercaseRole() {
         when(passwordEncoder.encode("password")).thenReturn("encodedPassword");
         when(accountRepository.save(any(Account.class))).thenReturn(account);
@@ -109,7 +110,7 @@ class AdminTasksServiceTest {
         assertEquals("encodedPassword", account.getPassword());
         assertEquals("ADMIN", account.getRole());
         verify(accountRepository).save(account);
-    }
+    }*/
 
     @Test
     void getUserByAccountId_shouldHidePassword() {

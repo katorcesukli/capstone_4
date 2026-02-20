@@ -66,6 +66,24 @@ public class TasksTests extends Tests{
         Assertions.assertTrue(jsonNode.isArray(), "Expected JSON array");
 
     }
+
+    @Test
+    public void testGetUsersTaskSuccessful() throws Exception{
+        MvcResult result = mockMvc.perform(get("/api/tasks/user/"+userAccountTest.getAccountId()))
+                .andExpect(status().isOk())//200
+                .andReturn();
+        String jsonResponse = result.getResponse().getContentAsString();
+        ObjectMapper mapper = new ObjectMapper();
+        JsonNode jsonNode = mapper.readTree(jsonResponse);
+        Assertions.assertTrue(jsonNode.isArray(), "Expected JSON array");
+        /**Check all task_id*/
+        Assertions.assertTrue(jsonNode.isArray(), "Expected JSON array");
+        for (JsonNode taskNode : jsonNode) {
+            assertEquals(userAccountTest.getAccountId(),taskNode.get("taskId").get("accountId").asString());
+
+        }
+
+    }
     @Test
     public void testGetTaskByIdSuccessful() throws Exception{
         MvcResult result = mockMvc.perform(get("/api/tasks/"+sampleTask.getId()))
@@ -131,8 +149,13 @@ public class TasksTests extends Tests{
         //GET
         MvcResult getResult = mockMvc.perform(get("/api/tasks"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[?(@.taskName == '%s' && @.taskDescription == '%s' && @.taskStatus =='%s' && @.taskDate=='%s')]",
-                "A Created task", "A task description","Not Started",now.toString()).exists()).andReturn();
+                .andExpect(jsonPath("$[?(@.taskId.accountId == '%s' && @.taskName == '%s' && @.taskDescription == '%s' && @.taskStatus == '%s' && @.taskDate == '%s')]",
+                        userAccountTest.getAccountId(),
+                        "A Created task",
+                        "A task description",
+                        "Not Started",
+                        now.toString()
+                ).exists()).andReturn();
 
 
 

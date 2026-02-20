@@ -86,7 +86,7 @@ public class TaskService {
         Account account = accountRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AccountDoesNotExistException("Account not found: " + accountId));
 
-        return taskRepository.findByTaskId(account);
+        return taskRepository.findByTaskIdOrderByTaskDate(account);
     }
 
 

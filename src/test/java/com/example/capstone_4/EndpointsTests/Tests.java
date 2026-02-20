@@ -52,15 +52,24 @@ public class Tests {
 
         taskRepository.save(sampleTask);
 
-        /*
+        adminAccountTest =new Account();
+
         adminAccountTest.setPassword("password");
         adminAccountTest.setRole("ROLE_ADMIN");
-        this.mockUserDetails2 = org.springframework.security.core.userdetails.User
-                .withUsername("admin")
-                .password("password") // doesn't really matter
-                .authorities("ROLE_ADMIN")
-                .build();
+        adminAccountTest.setAccountId("ID102");
+        adminAccountTest.setUsername("random");
+        adminAccountTest.setPassword("password");
+        adminAccountTest.setRole("ROLE_USER");
+        accountRepository.save(adminAccountTest);
 
-         */
+        //For when we test the get user's own tasks
+        Task dummyTask = new Task();
+        dummyTask.setTaskDescription("Dummy");
+        dummyTask.setTaskDate(LocalDate.now());
+        dummyTask.setTaskName("A task");
+        dummyTask.setTaskStatus("In Progress");
+        dummyTask.setTaskId(adminAccountTest);
+        taskRepository.save(dummyTask);
+
     }
 }

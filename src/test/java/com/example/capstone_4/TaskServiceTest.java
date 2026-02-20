@@ -126,7 +126,7 @@ class TaskServiceTest {
     void getByTaskByUserId_shouldReturnTasks() {
         when(accountRepository.findByAccountId("A1"))
                 .thenReturn(Optional.of(account));
-        when(taskRepository.findByTaskId(account))
+        when(taskRepository.findByTaskIdOrderByTaskDate(account))
                 .thenReturn(List.of(task));
 
         List<Task> tasks = taskService.getByTaskByUserId("A1");
