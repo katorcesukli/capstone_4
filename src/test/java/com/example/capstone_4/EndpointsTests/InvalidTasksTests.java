@@ -40,7 +40,6 @@ public class InvalidTasksTests extends Tests {
         successTask.put("taskStatus","In progress");
         successTask.put("taskDate",String.valueOf(LocalDate.now()));
 
-
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequestBody = objectMapper.writeValueAsString(successTask);
         MvcResult result = mockMvc.perform(post("/api/tasks")

@@ -29,12 +29,14 @@ public class Tests {
     @BeforeEach
     public void setUp(){
         userAccountTest =new Account();
-        userAccountTest.setId(1L);
         userAccountTest.setAccountId("ID101");
         userAccountTest.setUsername("random");
         userAccountTest.setPassword("password");
         userAccountTest.setRole("ROLE_USER");
         accountRepository.save(userAccountTest);
+
+        accountRepository.flush();
+
         this.mockUserDetails1 = org.springframework.security.core.userdetails.User
                 .withUsername("random")
                 .password("password") // doesn't really matter
