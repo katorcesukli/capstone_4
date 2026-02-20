@@ -16,6 +16,7 @@ function AdminDashboard() {
   const [taskDate, setTaskDate] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   // User management state
   const [users, setUsers] = useState([]);
@@ -24,6 +25,7 @@ function AdminDashboard() {
   const [password, setPassword] = useState('');
   const [role, setRole] = useState('USER');
   const [editingUserId, setEditingUserId] = useState(null);
+  const [showUserEditModal, setShowUserEditModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -100,12 +102,18 @@ function AdminDashboard() {
       }
       resetForm();
       loadTasks();
+      setShowEditModal(false);
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    resetForm();
   };
 
   const editTask = (task) => {
@@ -115,6 +123,7 @@ function AdminDashboard() {
     setTaskStatus(task.taskStatus);
     setTaskDate(task.taskDate);
     setEditingId(task.id);
+    setShowEditModal(true);
   };
 
   const deleteTask = async (id) => {
@@ -184,12 +193,18 @@ function AdminDashboard() {
       }
       resetUserForm();
       loadUsers();
+      setShowUserEditModal(false);
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeUserEditModal = () => {
+    setShowUserEditModal(false);
+    resetUserForm();
   };
 
   const editUser = async (accountId) => {
@@ -204,6 +219,7 @@ function AdminDashboard() {
       setPassword('');
       setRole(userData.role);
       setEditingUserId(userData.accountId);
+      setShowUserEditModal(true);
     } catch (error) {
       console.error(error);
       alert(error.message);
@@ -236,161 +252,109 @@ function AdminDashboard() {
   if (!user) return <div>Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-6">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+      <div className="max-w-7xl mx-auto">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">Admin Dashboard</h1>
-            <h2 className="text-xl">Welcome, {user.username}</h2>
+            <h1 className="text-4xl font-bold text-gray-800">Task Tracker Dashboard</h1>
+            <p className="text-lg text-gray-600">Welcome, {user.username} (Admin)</p>
           </div>
-          <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-            Logout
+          <button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
+            <span>Logout</span>
           </button>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-2xl font-bold mb-4">{editingId ? 'Edit Task' : 'Create New Task'}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Task ID:</label>
-              <input
-                type="text"
-                value={taskId}
-                placeholder="Auto-generated"
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Task Name:</label>
-              <input
-                type="text"
-                value={taskName}
-                onChange={(e) => setTaskName(e.target.value)}
-                placeholder="Enter task name"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Task Description:</label>
-              <input
-                type="text"
-                value={taskDescription}
-                onChange={(e) => setTaskDescription(e.target.value)}
-                placeholder="Enter description"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Task Status:</label>
-              <select
-                value={taskStatus}
-                onChange={(e) => setTaskStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="PENDING">PENDING</option>
-                <option value="COMPLETED">COMPLETED</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Task Date:</label>
-              <input
-                type="date"
-                value={taskDate}
-                onChange={(e) => setTaskDate(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
+        {/* Tasks Display */}
+        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">All Tasks</h2>
             <button
-              onClick={saveTask}
-              disabled={loading}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+              onClick={() => setShowEditModal(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
             >
-              {loading ? 'Saving...' : 'Save Task'}
-            </button>
-            <button
-              onClick={resetForm}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Reset Form
+              <span>+ New Task</span>
             </button>
           </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Tasks</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left">Account ID</th>
-                  <th className="px-4 py-2 text-left">Name</th>
-                  <th className="px-4 py-2 text-left">Description</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map(task => (
-                  <tr key={task.id} className="border-t">
-                    <td className="px-4 py-2">{task.taskId?.accountId || ''}</td>
-                    <td className="px-4 py-2">{task.taskName}</td>
-                    <td className="px-4 py-2">{task.taskDescription}</td>
-                    <td className="px-4 py-2">{task.taskStatus}</td>
-                    <td className="px-4 py-2">{task.taskDate}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => editTask(task)}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tasks.map(task => (
+              <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName}</h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                    task.taskStatus === 'IN-PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {task.taskStatus}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">{task.taskDescription}</p>
+                <div className="text-sm text-gray-500 mb-4">
+                  <p>Account ID: {task.taskId?.accountId || ''}</p>
+                  <p>Due: {task.taskDate}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => editTask(task)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
         {/* Users Management Section */}
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-2xl font-bold mb-4">Users Management</h2>
+        <div className="bg-white p-8 rounded-xl shadow-lg mb-8 border border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">User Management</h2>
+            <button
+              onClick={() => setShowUserEditModal(true)}
+              className="bg-green-500 hover:bg-green-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
+            >
+              <span>+ New User</span>
+            </button>
+          </div>
           <div className="overflow-x-auto">
             <table className="w-full table-auto">
               <thead>
                 <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left">Account ID</th>
-                  <th className="px-4 py-2 text-left">Username</th>
-                  <th className="px-4 py-2 text-left">Role</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Account ID</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Username</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Role</th>
+                  <th className="px-4 py-3 text-left font-semibold text-gray-700">Actions</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map(user => (
-                  <tr key={user.accountId} className="border-t">
-                    <td className="px-4 py-2">{user.accountId}</td>
-                    <td className="px-4 py-2">{user.username}</td>
-                    <td className="px-4 py-2">{user.role}</td>
-                    <td className="px-4 py-2">
+                  <tr key={user.accountId} className="border-t border-gray-200 hover:bg-gray-50">
+                    <td className="px-4 py-3">{user.accountId}</td>
+                    <td className="px-4 py-3">{user.username}</td>
+                    <td className="px-4 py-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        user.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                      }`}>
+                        {user.role}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
                       <button
                         onClick={() => editUser(user.accountId)}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
+                        className="bg-yellow-500 hover:bg-yellow-600 text-white px-3 py-1 rounded text-sm mr-2 transition duration-200"
                       >
                         Edit
                       </button>
                       <button
                         onClick={() => deleteUser(user.accountId)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
+                        className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-sm transition duration-200"
                       >
                         Delete
                       </button>
@@ -401,69 +365,195 @@ function AdminDashboard() {
             </table>
           </div>
         </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-2xl font-bold mb-4">{editingUserId ? 'Edit User' : 'Create New User'}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Account ID:</label>
-              <input
-                type="text"
-                value={userId}
-                placeholder="Auto-generated"
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Username:</label>
-              <input
-                type="text"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="Enter username"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Password:</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="Enter password"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Role:</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="USER">USER</option>
-                <option value="ADMIN">ADMIN</option>
-              </select>
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
-            <button
-              onClick={saveUser}
-              disabled={loading}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
-            >
-              {loading ? 'Saving...' : 'Save User'}
-            </button>
-            <button
-              onClick={resetUserForm}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Reset Form
-            </button>
-          </div>
-        </div>
       </div>
+
+      {/* Task Edit Modal Overlay */}
+      {showEditModal && (
+        <>
+          <div className="fixed inset-0 z-40"></div>
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50" style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+            {/* Modal Container */}
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-100">
+              {/* Modal Header */}
+              <div className="sticky top-0 flex justify-between items-center p-8 border-b border-gray-200 bg-white rounded-t-2xl">
+                <h2 className="text-3xl font-bold text-gray-800">{editingId ? 'Edit Task' : 'Create New Task'}</h2>
+                <button
+                  onClick={closeEditModal}
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition duration-200"
+                  title="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:</label>
+                    <input
+                      type="text"
+                      value={taskId}
+                      placeholder="Auto-generated"
+                      readOnly
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Name:</label>
+                    <input
+                      type="text"
+                      value={taskName}
+                      onChange={(e) => setTaskName(e.target.value)}
+                      placeholder="Enter task name"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Status:</label>
+                    <select
+                      value={taskStatus}
+                      onChange={(e) => setTaskStatus(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="IN-PROGRESS">IN-PROGRESS</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Date:</label>
+                    <input
+                      type="date"
+                      value={taskDate}
+                      onChange={(e) => setTaskDate(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Description:</label>
+                    <textarea
+                      value={taskDescription}
+                      onChange={(e) => setTaskDescription(e.target.value)}
+                      placeholder="Enter task description"
+                      rows="4"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 flex gap-4 justify-end p-8 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
+                <button
+                  onClick={closeEditModal}
+                  className="px-6 py-3 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold transition duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveTask}
+                  disabled={loading}
+                  className="px-6 py-3 rounded-lg text-white bg-blue-500 hover:bg-blue-600 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Saving...' : (editingId ? 'Update Task' : 'Create Task')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* User Edit Modal Overlay */}
+      {showUserEditModal && (
+        <>
+          <div className="fixed inset-0 z-40"></div>
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50" style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+            {/* Modal Container */}
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-100">
+              {/* Modal Header */}
+              <div className="sticky top-0 flex justify-between items-center p-8 border-b border-gray-200 bg-white rounded-t-2xl">
+                <h2 className="text-3xl font-bold text-gray-800">{editingUserId ? 'Edit User' : 'Create New User'}</h2>
+                <button
+                  onClick={closeUserEditModal}
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition duration-200"
+                  title="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Account ID:</label>
+                    <input
+                      type="text"
+                      value={userId}
+                      placeholder="Auto-generated"
+                      readOnly
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Username:</label>
+                    <input
+                      type="text"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Enter username"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Password:</label>
+                    <input
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder={editingUserId ? "Leave blank to keep current" : "Enter password"}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Role:</label>
+                    <select
+                      value={role}
+                      onChange={(e) => setRole(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent transition"
+                    >
+                      <option value="USER">USER</option>
+                      <option value="ADMIN">ADMIN</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 flex gap-4 justify-end p-8 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
+                <button
+                  onClick={closeUserEditModal}
+                  className="px-6 py-3 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold transition duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveUser}
+                  disabled={loading}
+                  className="px-6 py-3 rounded-lg text-white bg-green-500 hover:bg-green-600 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Saving...' : (editingUserId ? 'Update User' : 'Create User')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }

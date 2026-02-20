@@ -16,6 +16,7 @@ function UserDashboard() {
   const [taskDate, setTaskDate] = useState('');
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -78,12 +79,18 @@ function UserDashboard() {
       }
       resetForm();
       loadTasks();
+      setShowEditModal(false);
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || error.message);
     } finally {
       setLoading(false);
     }
+  };
+
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    resetForm();
   };
 
   const editTask = async (task) => {
@@ -97,6 +104,7 @@ function UserDashboard() {
     setTaskStatus(task.taskStatus);
     setTaskDate(task.taskDate);
     setEditingId(task.id);
+    setShowEditModal(true);
   };
 
   const deleteTask = async (id) => {
@@ -148,139 +156,168 @@ function UserDashboard() {
     navigate('/login');
   };
 
-  if (!user) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!user) return <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">Loading...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <div className="max-w-6xl mx-auto">
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6 flex justify-between items-center">
+        <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold">User Dashboard</h1>
-            <h2 className="text-xl">Welcome, {user.username}</h2>
+            <h1 className="text-4xl font-bold text-gray-800">My Task Tracker</h1>
+            <p className="text-lg text-gray-600">Welcome, {user.username}</p>
           </div>
-          <button onClick={logout} className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-            Logout
+          <button onClick={logout} className="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2">
+            <span>Logout</span>
           </button>
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md mb-6">
-          <h2 className="text-2xl font-bold mb-4">{editingId ? 'Edit Task' : 'Create / Edit Task'}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Task ID</label>
-              <input
-                type="text"
-                value={taskId}
-                placeholder="Task ID"
-                readOnly
-                className="w-full px-3 py-2 border border-gray-300 rounded-md bg-gray-100"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Title</label>
-              <input
-                type="text"
-                value={taskName}
-                onChange={(e) => setTaskName(e.target.value)}
-                placeholder="Task Title"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium mb-1">Description</label>
-              <input
-                type="text"
-                value={taskDescription}
-                onChange={(e) => setTaskDescription(e.target.value)}
-                placeholder="Task Description"
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Status</label>
-              <select
-                value={taskStatus}
-                onChange={(e) => setTaskStatus(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="PENDING">PENDING</option>
-                <option value="IN_PROGRESS">IN_PROGRESS</option>
-                <option value="COMPLETED">COMPLETED</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Date</label>
-              <input
-                type="date"
-                value={taskDate}
-                onChange={(e) => setTaskDate(e.target.value)}
-                required
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-          </div>
-          <div className="mt-4 flex gap-2">
+        {/* Tasks Display */}
+        <div className="bg-white p-8 rounded-xl shadow-lg border border-gray-200">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold text-gray-800">My Tasks</h2>
             <button
-              onClick={saveTask}
-              disabled={loading}
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 disabled:opacity-50"
+              onClick={() => setShowEditModal(true)}
+              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-3 rounded-lg shadow-md transition duration-200 flex items-center gap-2"
             >
-              {loading ? 'Saving...' : 'Save Task'}
-            </button>
-            <button
-              onClick={resetForm}
-              className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600"
-            >
-              Reset Form
+              <span>+ New Task</span>
             </button>
           </div>
-        </div>
-
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-2xl font-bold mb-4">Your Tasks</h2>
-          <div className="overflow-x-auto">
-            <table className="w-full table-auto">
-              <thead>
-                <tr className="bg-gray-50">
-                  <th className="px-4 py-2 text-left">Account ID</th>
-                  <th className="px-4 py-2 text-left">Title</th>
-                  <th className="px-4 py-2 text-left">Description</th>
-                  <th className="px-4 py-2 text-left">Status</th>
-                  <th className="px-4 py-2 text-left">Date</th>
-                  <th className="px-4 py-2 text-left">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {tasks.map(task => (
-                  <tr key={task.id} className="border-t">
-                    <td className="px-4 py-2">{task.taskId?.accountId || ''}</td>
-                    <td className="px-4 py-2">{task.taskName}</td>
-                    <td className="px-4 py-2">{task.taskDescription}</td>
-                    <td className="px-4 py-2">{task.taskStatus}</td>
-                    <td className="px-4 py-2">{task.taskDate}</td>
-                    <td className="px-4 py-2">
-                      <button
-                        onClick={() => editTask(task)}
-                        className="bg-yellow-500 text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => deleteTask(task.id)}
-                        className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600"
-                      >
-                        Delete
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {tasks.map(task => (
+              <div key={task.id} className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm hover:shadow-md transition duration-200">
+                <div className="flex justify-between items-start mb-4">
+                  <h3 className="text-lg font-semibold text-gray-800">{task.taskName}</h3>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    task.taskStatus === 'COMPLETED' ? 'bg-green-100 text-green-800' :
+                    task.taskStatus === 'IN_PROGRESS' ? 'bg-yellow-100 text-yellow-800' :
+                    'bg-gray-100 text-gray-800'
+                  }`}>
+                    {task.taskStatus.replace('_', '-')}
+                  </span>
+                </div>
+                <p className="text-gray-600 mb-4">{task.taskDescription}</p>
+                <div className="text-sm text-gray-500 mb-4">
+                  <p>Account ID: {task.taskId?.accountId || ''}</p>
+                  <p>Due: {task.taskDate}</p>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => editTask(task)}
+                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => deleteTask(task.id)}
+                    className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm transition duration-200"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
+
+      {/* Task Edit Modal Overlay */}
+      {showEditModal && (
+        <>
+          <div className="fixed inset-0 z-40"></div>
+          <div className="fixed inset-0 flex items-center justify-center p-4 z-50" style={{ backdropFilter: 'blur(8px)', backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
+            {/* Modal Container */}
+            <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-100">
+              {/* Modal Header */}
+              <div className="sticky top-0 flex justify-between items-center p-8 border-b border-gray-200 bg-white rounded-t-2xl">
+                <h2 className="text-3xl font-bold text-gray-800">{editingId ? 'Edit Task' : 'Create New Task'}</h2>
+                <button
+                  onClick={closeEditModal}
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-2 transition duration-200"
+                  title="Close modal"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Modal Body */}
+              <div className="p-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:</label>
+                    <input
+                      type="text"
+                      value={taskId}
+                      placeholder="Auto-generated"
+                      readOnly
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-50 text-gray-500 font-medium"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Title:</label>
+                    <input
+                      type="text"
+                      value={taskName}
+                      onChange={(e) => setTaskName(e.target.value)}
+                      placeholder="Enter task title"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Status:</label>
+                    <select
+                      value={taskStatus}
+                      onChange={(e) => setTaskStatus(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    >
+                      <option value="PENDING">PENDING</option>
+                      <option value="IN_PROGRESS">IN_PROGRESS</option>
+                      <option value="COMPLETED">COMPLETED</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Due Date:</label>
+                    <input
+                      type="date"
+                      value={taskDate}
+                      onChange={(e) => setTaskDate(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Description:</label>
+                    <textarea
+                      value={taskDescription}
+                      onChange={(e) => setTaskDescription(e.target.value)}
+                      placeholder="Enter task description"
+                      rows="4"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="sticky bottom-0 flex gap-4 justify-end p-8 border-t border-gray-200 bg-gray-50 rounded-b-2xl">
+                <button
+                  onClick={closeEditModal}
+                  className="px-6 py-3 rounded-lg text-gray-700 bg-gray-200 hover:bg-gray-300 font-semibold transition duration-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={saveTask}
+                  disabled={loading}
+                  className="px-6 py-3 rounded-lg text-white bg-blue-500 hover:bg-blue-600 font-semibold transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {loading ? 'Saving...' : (editingId ? 'Update Task' : 'Create Task')}
+                </button>
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
