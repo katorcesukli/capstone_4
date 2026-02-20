@@ -41,6 +41,13 @@ public class TaskController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    @GetMapping("/id/{stringTaskId}")
+    public List<Task> getTaskByStringTaskId(@PathVariable String stringTaskId) {
+        return taskService.getTaskByStringTaskId(stringTaskId);
+    }
+
+
+
     // POST /api/tasks
     @PostMapping
     public ResponseEntity<?> createNewTask(@RequestBody Task task,@RequestParam String accountId) {
