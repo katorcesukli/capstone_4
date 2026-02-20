@@ -3,6 +3,7 @@ package com.example.capstone_4.controller;
 import com.example.capstone_4.Exceptions.AccountDoesNotExistException;
 import com.example.capstone_4.Exceptions.ExcessiveLengthException;
 import com.example.capstone_4.Exceptions.MissingRequiredFieldException;
+import com.example.capstone_4.Exceptions.TaskIdDoesNotExistException;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.service.TaskService;
 import com.example.capstone_4.service.AdminTasksService;
@@ -69,9 +70,8 @@ public class TaskController {
             if (e instanceof MissingRequiredFieldException || e instanceof ExcessiveLengthException)
                 return ResponseEntity.status(400).body(Map.of("Error", e.getMessage()));
             else
-                return ResponseEntity.status(500).body(Map.of("Error", e.getMessage()));
+                return ResponseEntity.status(404).body(Map.of("Error", e.getMessage()));
         }
-
 
     }
 

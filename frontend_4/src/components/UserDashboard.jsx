@@ -41,7 +41,7 @@ function UserDashboard() {
       setTasks(response.data);
     } catch (error) {
       console.error(error);
-      alert("Error loading tasks: " + (error.response?.data?.message || error.message));
+      alert("Error loading tasks: " + (error.response?.data?.message||error.response?.data?.Error || error.message));
     }
   };
 
@@ -255,7 +255,7 @@ function UserDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Title:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700 required-label">Task Title:</label>
                     <input
                       type="text"
                       value={taskName}
