@@ -1,4 +1,4 @@
-package com.example.capstone_4.service;
+package com.example.capstone_4;
 
 import com.example.capstone_4.model.Account;
 import com.example.capstone_4.model.Task;
