@@ -13,8 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 
 /**
@@ -93,8 +92,7 @@ public class InvalidTasksTests extends Tests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Error: Task description is too long. Max 200 characters allowed"))
-
+                .andExpect(jsonPath("$.Error").value("Task description is too long. Max 200 characters allowed"))
                 .andReturn();
 
     }
@@ -114,7 +112,7 @@ public class InvalidTasksTests extends Tests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(jsonRequestBody))
                 .andExpect(status().isBadRequest())
-                .andExpect(content().string("Error: Task name is too long. Max 60 characters allowed"))
+                .andExpect(jsonPath("$.Error").value("Task name is too long. Max 60 characters allowed"))
                 .andReturn();
 
     }

@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/tasks") //same lang here, remember the syntax ehh
@@ -52,19 +53,26 @@ public class TaskController {
 
         } catch (Exception e) {
             if (e instanceof MissingRequiredFieldException || e instanceof ExcessiveLengthException)
-                return ResponseEntity.status(400).body("Error: "+ e.getMessage());
+                return ResponseEntity.status(400).body(Map.of("Error", e.getMessage()));
             else
-                return ResponseEntity.status(500).body("Error: "+e.getMessage());
+                return ResponseEntity.status(500).body(Map.of("Error", e.getMessage()));
 
         }
     }
 
     // PUT /api/tasks/{id}
     @PutMapping("/{id}")
-    public ResponseEntity<Task> updateTaskById(@PathVariable Long id, @RequestBody Task task) {
-        return taskService.updateTaskById(id, task)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<?> updateTaskById(@PathVariable Long id, @RequestBody Task task) {
+        try{
+            return ResponseEntity.ok(taskService.updateTaskById(id, task).get());
+        }catch(Exception e){
+            if (e instanceof MissingRequiredFieldException || e instanceof ExcessiveLengthException)
+                return ResponseEntity.status(400).body(Map.of("Error", e.getMessage()));
+            else
+                return ResponseEntity.status(500).body(Map.of("Error", e.getMessage()));
+        }
+
+
     }
 
     // DELETE /api/tasks/{id}
@@ -86,9 +94,9 @@ public class TaskController {
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body("Error: "+e.getMessage());
+                return ResponseEntity.status(404).body(Map.of("Error", e.getMessage()));
             }else
-                return ResponseEntity.status(500).body("Error: "+e.getMessage());
+                return ResponseEntity.status(500).body(Map.of("Error", e.getMessage()));
         }
     }
 
@@ -99,9 +107,9 @@ public class TaskController {
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body("Error: "+e.getMessage());
+                return ResponseEntity.status(404).body(Map.of("Error", e.getMessage()));
             }else
-                return ResponseEntity.status(500).body("Error: "+e.getMessage());
+                return ResponseEntity.status(500).body(Map.of("Error", e.getMessage()));
         }
     }
 
