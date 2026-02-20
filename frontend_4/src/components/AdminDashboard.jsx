@@ -393,7 +393,7 @@ function AdminDashboard() {
               <div className="p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task ID:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="text"
                       value={taskId}
@@ -403,7 +403,7 @@ function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Name:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Name:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="text"
                       value={taskName}
@@ -413,7 +413,7 @@ function AdminDashboard() {
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Status:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Status:<span style={{ color: 'red' }}>*</span></label>
                     <select
                       value={taskStatus}
                       onChange={(e) => setTaskStatus(e.target.value)}
@@ -425,7 +425,7 @@ function AdminDashboard() {
                     </select>
                   </div>
                   <div>
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Date:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Date:<span style={{ color: 'red' }}>*</span></label>
                     <input
                       type="date"
                       value={taskDate}
@@ -434,7 +434,7 @@ function AdminDashboard() {
                     />
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Description:</label>
+                    <label className="block text-sm font-semibold mb-2 text-gray-700">Task Description:<span style={{ color: 'red' }}>*</span></label>
                     <textarea
                       value={taskDescription}
                       onChange={(e) => setTaskDescription(e.target.value)}
