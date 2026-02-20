@@ -82,7 +82,7 @@ function UserDashboard() {
       setShowEditModal(false);
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || error.message);
+      alert(error.response?.data?.Error || error.message);
     } finally {
       setLoading(false);
     }

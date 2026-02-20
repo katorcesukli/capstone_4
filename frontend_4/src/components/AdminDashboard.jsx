@@ -105,7 +105,7 @@ function AdminDashboard() {
       setShowEditModal(false);
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || error.message);
+      alert(error.response?.data?.Error || error.message);
     } finally {
       setLoading(false);
     }
@@ -137,7 +137,7 @@ function AdminDashboard() {
       loadTasks();
     } catch (error) {
       console.error(error);
-      alert(error.message);
+      alert(error.response?.data?.Error || error.message);
     }
   };
 
@@ -196,7 +196,7 @@ function AdminDashboard() {
       setShowUserEditModal(false);
     } catch (error) {
       console.error(error);
-      alert(error.response?.data?.message || error.message);
+      alert(error.response?.data?.Error || error.message);
     } finally {
       setLoading(false);
     }
@@ -233,6 +233,7 @@ function AdminDashboard() {
       await axios.delete(`${BASE_URL}/auth/${accountId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+      alert("User deleted successfully!");
       alert("User deleted successfully!");
       loadUsers();
     } catch (error) {

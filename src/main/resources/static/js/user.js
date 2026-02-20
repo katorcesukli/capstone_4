@@ -109,8 +109,15 @@ async function saveTask() {
         loadTasks();
 
     } catch (error) {
-        console.error(error);
-        alert(error.message);
+        if (error.response) {
+            console.error(error.response.data.Error);
+            alert(error.response.data.Error);
+        }else{
+            console.error(error.message);
+            alert(error.message);
+        }
+
+
     }
 }
 
