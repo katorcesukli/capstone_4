@@ -11,6 +11,7 @@ function UserDashboard() {
   const [tasks, setTasks] = useState([]);
   const [allTasks, setAllTasks] = useState([]);
   const [taskId, setTaskId] = useState('');
+  const [accountId, seAccountId] = useState('');
   const [taskName, setTaskName] = useState('');
   const [taskDescription, setTaskDescription] = useState('');
   const [taskStatus, setTaskStatus] = useState('PENDING');
@@ -163,28 +164,39 @@ function UserDashboard() {
   };
 
   const searchTask = async () => {
-    try {
-      if (!stringTaskId.trim()) {
-        setError("Please enter a Task ID");
-        return;
-      }
+  try {
+    if (!stringTaskId.trim())
+      return setError("Please enter a Task ID");
 
-      setError("");
+    const loggedUser = JSON.parse(localStorage.getItem("loggedUser"));
 
-      const response = await axios.get(
-        `${BASE_URL}/tasks/id/${stringTaskId}`
-      );
+    if (!loggedUser?.accountId)
+      return setError("User session not found");
 
-      setTasks(response.data);
-      setIsSearching(true);
+    setError("");
 
-    } catch (err) {
-      console.error(err);
-      setError("Task not found");
-      setTasks([]);
-      setIsSearching(true);
-    }
-  };
+    const { data } = await axios.get(
+      `${BASE_URL}/tasks/id/${stringTaskId}`
+    );
+
+   const userTasks = data.filter(task => {
+  console.log("Checking task", task.taskId, "account_id:", task.account_id);
+  return Number(task.taskId?.accountId) === Number(loggedUser.accountId);
+});
+
+    setTasks(userTasks);
+    setIsSearching(true);
+
+    if (userTasks.length === 0)
+      setError("No task found or unauthorized");
+
+  } catch (err) {
+    console.error(err);
+    setError("Task not found");
+    setTasks([]);
+    setIsSearching(true);
+  }
+};
 
   const clearSearch = () => {
     setStringTaskId("");
