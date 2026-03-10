@@ -2,93 +2,137 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-
     <title>Admin Dashboard - Tasks</title>
-    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
-<h1>Admin Dashboard - Tasks</h1>
-<h2>Welcome, <span id="username-display"></span></h2>
-<button id="logoutBtn">Logout</button>
-<!-- Task Table -->
-<table id="tasksTable">
-    <thead>
-    <tr>
-        <th>Account ID</th>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Status</th>
-        <th>Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Filled by JS -->
-    </tbody>
-</table>
+<div class="dashboard-container">
 
-<!-- Task Form -->
-<div class="form-container">
-    <h2 id="formTitle">Create New Task</h2>
-    <label>Task ID: </label>
-    <input type="text" id="taskIdInput" placeholder="Auto-generated" readonly>
-    <label>Task Name:</label>
-    <input type="text" id="taskNameInput" placeholder="Enter task name">
-    <label>Task Description:</label>
-    <input type="text" id="taskDescriptionInput" placeholder="Enter description">
-    <label>Task Status:</label>
-    <select id="taskStatusInput">
-        <option value="PENDING">PENDING</option>
-        <option value="COMPLETED">COMPLETED</option>
-    </select>
-    <label>Task Date:</label>
-    <input type="date" id="taskDateInput">
-    <br>
-    <button id="saveTaskBtn">Save or Edit Task</button>
-    <button id="resetFormBtn">Reset Form</button>
+    <!-- Header -->
+    <div class="card" style="display:flex; justify-content:space-between; align-items:center;">
+        <div>
+            <h1>Admin Dashboard</h1>
+            <h2>Welcome, <span id="username-display"></span></h2>
+        </div>
+        <button id="logoutBtn" class="btn-logout">Logout</button>
+    </div>
+
+    <!-- ================= TASKS ================= -->
+    <div class="card">
+        <h2>Tasks Management</h2>
+
+        <!-- Task Table -->
+        <div style="overflow-x:auto;">
+            <table id="tasksTable" class="transaction-table">
+                <thead>
+                <tr>
+                    <th>Account ID</th>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Date</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Filled by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Task Form -->
+        <div class="form-container">
+            <h3 id="formTitle">Create / Edit Task</h3>
+
+            <div class="form-group">
+                <label>Task ID</label>
+                <input type="text" id="taskIdInput" placeholder="Auto-generated" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Task Name</label>
+                <input type="text" id="taskNameInput" placeholder="Enter task name">
+            </div>
+
+            <div class="form-group">
+                <label>Task Description</label>
+                <input type="text" id="taskDescriptionInput" placeholder="Enter description">
+            </div>
+
+            <div class="form-group">
+                <label>Task Status</label>
+                <select id="taskStatusInput">
+                    <option value="PENDING">PENDING</option>
+                    <option value="COMPLETED">COMPLETED</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Task Date</label>
+                <input type="date" id="taskDateInput">
+            </div>
+
+            <button id="saveTaskBtn" class="btn-primary">Save / Edit Task</button>
+            <button id="resetFormBtn" class="btn-refresh" style="margin-top:10px;">Reset Form</button>
+        </div>
+    </div>
+
+    <!-- ================= USERS ================= -->
+    <div class="card">
+        <h2>Users Management</h2>
+
+        <div style="overflow-x:auto;">
+            <table id="usersTable" class="transaction-table">
+                <thead>
+                <tr>
+                    <th>Account ID</th>
+                    <th>Username</th>
+                    <th>Role</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Filled by JS -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- User Form -->
+        <div class="form-container">
+            <h3 id="userFormTitle">Create / Edit User</h3>
+
+            <div class="form-group">
+                <label>Account ID</label>
+                <input type="text" id="userIdInput" placeholder="Auto-generated" readonly>
+            </div>
+
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" id="usernameInput" placeholder="Enter username">
+            </div>
+
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" id="passwordInput" placeholder="Enter password">
+            </div>
+
+            <div class="form-group">
+                <label>Role</label>
+                <select id="roleInput">
+                    <option value="USER">USER</option>
+                    <option value="ADMIN">ADMIN</option>
+                </select>
+            </div>
+
+            <button id="saveUserBtn" class="btn-primary">Save / Edit User</button>
+            <button id="resetUserFormBtn" class="btn-refresh" style="margin-top:10px;">Reset Form</button>
+        </div>
+    </div>
+
 </div>
 
-<!-- ================= USERS ================= -->
-<h3>Users Management</h3>
-
-<table id="usersTable">
-    <thead>
-    <tr>
-        <th>Account ID</th>
-        <th>Username</th>
-        <th>Role</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    <!-- Filled by JS -->
-    </tbody>
-</table>
-
-<div class="form-container">
-    <h2 id="userFormTitle">Create New User</h2>
-    <label>Account ID:</label>
-    <input type="text" id="userIdInput" placeholder="Auto-generated" readonly>
-    <label>Username:</label>
-    <input type="text" id="usernameInput" placeholder="Enter username">
-    <label>Password:</label>
-    <input type="password" id="passwordInput" placeholder="Enter password">
-    <label>Role:</label>
-    <select id="roleInput">
-        <option value="USER">USER</option>
-        <option value="ADMIN">ADMIN</option>
-    </select>
-    <br>
-    <button id="saveUserBtn">Save or Edit User</button>
-    <button id="resetUserFormBtn">Reset Form</button>
-</div>
-
-<!-- JS -->
 <script src="js/admin.js"></script>
 <script src="js/app.js"></script>
 </body>
 </html>
-
-

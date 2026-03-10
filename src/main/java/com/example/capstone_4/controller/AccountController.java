@@ -13,20 +13,20 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountController {
 
-    private final AdminTasksService adminService;
+    private final AdminTasksService adminTaskService;
 
     // ---------------- USER CRUD ----------------
 
     // Get all users
     @GetMapping
     public List<Account> getAllUsers() {
-        return adminService.getAllUsers();
+        return adminTaskService.getAllUsers();
     }
 
     // Get a user by accountId
     @GetMapping("/{accountId}")
     public ResponseEntity<Account> getUserById(@PathVariable String accountId) {
-        return adminService.getUserByAccountId(accountId)
+        return adminTaskService.getUserByAccountId(accountId)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -34,13 +34,13 @@ public class AccountController {
     // Create new user
     @PostMapping
     public ResponseEntity<Account> createUser(@RequestBody Account account) {
-        return ResponseEntity.ok(adminService.createUser(account));
+        return ResponseEntity.ok(adminTaskService.createUser(account));
     }
 
     // Update existing user
     @PutMapping("/edit/{accountId}")
     public ResponseEntity<Account> updateUser(@PathVariable String accountId, @RequestBody Account account) {
-        return adminService.updateUser(accountId, account)
+        return adminTaskService.updateUser(accountId, account)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -49,7 +49,7 @@ public class AccountController {
     @DeleteMapping("/{accountId}")
     public ResponseEntity<String> deleteUser(@PathVariable String accountId) {
         try {
-            boolean deleted = adminService.deleteUser(accountId);
+            boolean deleted = adminTaskService.deleteUser(accountId);
             return deleted ? ResponseEntity.ok("User deleted successfully") : ResponseEntity.notFound().build();
         } catch (RuntimeException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

@@ -1,6 +1,8 @@
 package com.example.capstone_4.controller;
 
 import com.example.capstone_4.Exceptions.AccountDoesNotExistException;
+import com.example.capstone_4.Exceptions.ExcessiveLengthException;
+import com.example.capstone_4.Exceptions.MissingRequiredFieldException;
 import com.example.capstone_4.model.Task;
 import com.example.capstone_4.service.TaskService;
 import com.example.capstone_4.service.AdminTasksService;
@@ -40,10 +42,20 @@ public class TaskController {
 
     // POST /api/tasks
     @PostMapping
-    public ResponseEntity<Task> createNewTask(@RequestBody Task task,@RequestParam String accountId) {
+    public ResponseEntity<?> createNewTask(@RequestBody Task task,@RequestParam String accountId) {
         // accountId is included in the task JSON from frontend
-        Task createdTask = taskService.createNewTask(task, accountId);
-        return ResponseEntity.ok(createdTask);
+        try{
+            Task createdTask = taskService.createNewTask(task, accountId);
+
+            return ResponseEntity.status(201).body(createdTask);
+
+        } catch (Exception e) {
+            if (e instanceof MissingRequiredFieldException || e instanceof ExcessiveLengthException)
+                return ResponseEntity.status(400).body("Error: "+ e.getMessage());
+            else
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
+
+        }
     }
 
     // PUT /api/tasks/{id}
@@ -58,7 +70,7 @@ public class TaskController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTaskById(@PathVariable Long id) {
         if (taskService.deleteTaskById(id)) {
-            return ResponseEntity.ok().build();
+            return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
     }
@@ -73,22 +85,22 @@ public class TaskController {
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body(e.getMessage());
+                return ResponseEntity.status(404).body("Error: "+e.getMessage());
             }else
-                return ResponseEntity.status(500).body(e.getMessage());
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
         }
     }
 
     @PostMapping("/user/{accountId}")
     public ResponseEntity<?> createTask(@PathVariable("accountId")String accountId, @RequestBody Task task){
         try{
-            return ResponseEntity.ok(taskService.createTask(accountId, task));
+            return ResponseEntity.status(201).body(taskService.createTask(accountId, task));
 
         }catch (Exception e){
             if (e instanceof AccountDoesNotExistException){
-                return ResponseEntity.status(404).body(e.getMessage());
+                return ResponseEntity.status(404).body("Error: "+e.getMessage());
             }else
-                return ResponseEntity.status(500).body(e.getMessage());
+                return ResponseEntity.status(500).body("Error: "+e.getMessage());
         }
     }
 
